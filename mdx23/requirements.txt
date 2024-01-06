@@ -1,0 +1,13 @@
+numpy
+soundfile
+scipy
+tqdm
+librosa
+demucs
+onnxruntime-gpu
+torch>=1.13.0
+pyyaml
+ml_collections
+pytorch_lightning
+samplerate
+segmentation_models_pytorch==0.3.3
