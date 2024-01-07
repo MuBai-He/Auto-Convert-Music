@@ -3,6 +3,7 @@ import subprocess
 import requests
 import sys
 from pathlib import Path
+from pydub import AudioSegment
 
 
 class convert_music():
@@ -15,10 +16,15 @@ class convert_music():
         self.netease_download(id=id,name=song_name)
         self.sep_song(song_name=song_name)
         self.convert_vocals(song_name=song_name,vocal=vocal)
-        #处理
-
+        self.mix_music(song_name,vocal)
         self.converting.pop(0)
         self.converted.append(song_name)
+    def mix_music(self,song_name,vocal):
+        sound1 = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_vocals_{vocal}.wav')
+        sound2 = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_instrum.wav')
+
+        output = sound1.overlay(sound2)  # 把sound2叠加到sound1上面
+        output.export(f"output/{song_name}/{song_name}_{vocal}.wav", format="wav")  # 保存文件
 
     def convert_vocals(self,song_name, vocal):
         infer_vocals_end = f'./output/{song_name}/{song_name}_vocals.wav'
@@ -49,4 +55,5 @@ class convert_music():
 
 if __name__ =="__main__":
     c=convert_music()
-    c.convert_music_netease(id=2094351580,song_name="命运之人",vocal="刻晴[中]")
+    c.convert_music_netease(id=487527980,song_name="命运之人",vocal="刻晴[中]")
+    #c.mix_music(song_name="命运之人",vocal="刻晴[中]")
