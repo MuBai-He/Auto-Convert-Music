@@ -1,5 +1,7 @@
 import os
 import subprocess
+import threading
+
 import requests
 import sys
 from pathlib import Path
@@ -12,7 +14,15 @@ class convert_music():
     def __init__(self):
         self.converting=[]
         self.converted=[]
+    def convert_music(self,vocal,song_name,id="",file=""):
+        if id !="":
+            thread = threading.Thread(target=self.convert_music_netease,kwargs={'id': id, 'song_name': song_name, 'vocal':vocal})
+        elif file !="":
+            thread = threading.Thread(target=self.convert_file,kwargs={'file': file, 'song_name': song_name, 'vocal': vocal})
+        else:
+            raise "Error"
 
+        thread.start()
     def convert_music_netease(self,id,song_name,vocal):
         self.converting.append(song_name)
         self.netease_download(id=id,name=song_name)
@@ -91,5 +101,5 @@ class convert_music():
 
 if __name__ =="__main__":
     c=convert_music()
-    c.convert_music_netease(id=1951665069,song_name="17岁的歌",vocal="刻晴[中]")
+    c.convert_music(id=1951665069,song_name="17岁的歌",vocal="刻晴[中]")
     #c.mix_music(song_name="命运之人",vocal="刻晴[中]")
