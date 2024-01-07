@@ -10,23 +10,24 @@ class convert_music():
         self.converting=[]
         self.converted=[]
 
-    def convert_music_netease(self,id,name):
-        self.converting.append(name)
-        self.netease_download(id,name)
-
+    def convert_music_netease(self,id,song_name,vocal):
+        self.converting.append(song_name)
+        self.netease_download(id=id,name=song_name)
+        self.sep_song(song_name=song_name)
+        self.convert_vocals(song_name=song_name,vocal=vocal)
         #处理
 
         self.converting.pop(0)
-        self.converted.append(name)
+        self.converted.append(song_name)
 
     def convert_vocals(self,song_name, vocal):
         infer_vocals_end = f'./output/{song_name}/{song_name}_vocals.wav'
         convert_vocals = sys.executable + " ./sovits4.1/inference_main.py " + f'-n {infer_vocals_end} -s {vocal}'
         subprocess.run(convert_vocals, shell=True)
 
-    def sep_song(self,file_path, song_name):
+    def sep_song(self, song_name):
         Path('./output', song_name).mkdir(parents=True, exist_ok=True)
-        inference_task = sys.executable + ' inference.py' + f' --input_audio "{file_path}" --output_folder "./output/{song_name}"' + ' --vocals_only true'
+        inference_task = sys.executable + ' ./mdx23/inference.py' + f' --input_audio "input/{song_name}.mp3" --output_folder "./output/{song_name}"' + ' --vocals_only true'
         subprocess.run(inference_task, shell=True)
     def netease_download(self,id, name):
         hd = {
@@ -48,4 +49,4 @@ class convert_music():
 
 if __name__ =="__main__":
     c=convert_music()
-    c.convert_vocals(song_name="Dacapo",vocal="刻晴[中]")
+    c.convert_music_netease(id=2094351580,song_name="命运之人",vocal="刻晴[中]")
