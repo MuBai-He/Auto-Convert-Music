@@ -55,5 +55,5 @@ class convert_music():
 
 if __name__ =="__main__":
     c=convert_music()
-    c.convert_music_netease(id=487527980,song_name="命运之人",vocal="刻晴[中]")
+    c.convert_music_netease(id=487527980,song_name="说吧",vocal="刻晴[中]")
     #c.mix_music(song_name="命运之人",vocal="刻晴[中]")
