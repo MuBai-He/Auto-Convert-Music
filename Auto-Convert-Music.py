@@ -6,7 +6,7 @@ import requests
 import sys
 from pathlib import Path
 from pydub import AudioSegment
-from pedalboard import Pedalboard,Compressor,NoiseGate,HighShelfFilter,Gain
+from pedalboard import Pedalboard,Compressor,NoiseGate,HighShelfFilter,Gain,HighpassFilter
 from pedalboard.io import AudioFile
 
 
@@ -49,9 +49,9 @@ class convert_music():
 
     def vocal_processing(self,song_name,vocal,file=""):
         board = Pedalboard(
-            [NoiseGate(threshold_db=-15.0), Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
-             HighShelfFilter(cutoff_frequency_hz=120, gain_db=-24), HighShelfFilter(cutoff_frequency_hz=500, gain_db=3),
-             Gain(gain_db=2)])
+            [NoiseGate(threshold_db=-15.0),Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
+             HighpassFilter(cutoff_frequency_hz=110),
+             Gain(gain_db=1)])
         if file=="":
             vocal_path=fr"output/{song_name}/{song_name}_vocals_{vocal}.wav"
         else:
@@ -101,5 +101,8 @@ class convert_music():
 
 if __name__ =="__main__":
     c=convert_music()
-    c.convert_music(id=1951665069,song_name="17岁的歌",vocal="刻晴[中]")
+    #c.convert_music(id=1951665069,song_name="17岁的歌",vocal="刻晴[中]")
+    c.vocal_processing(song_name="说吧",vocal="刻晴[中]",file='output/说吧/说吧_vocals_刻晴[中].wav')
+
+    c.mix_music(song_name="说吧",vocal="刻晴[中]")
     #c.mix_music(song_name="命运之人",vocal="刻晴[中]")
