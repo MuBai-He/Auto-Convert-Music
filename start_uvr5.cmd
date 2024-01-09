@@ -1,6 +1,6 @@
 @echo off
 set "script_path=ultimatevocalremovergui\UVR.py"
-set "conda_env=base"
+set "conda_env=convert-music"
 
 :loop
 call conda activate %conda_env%
