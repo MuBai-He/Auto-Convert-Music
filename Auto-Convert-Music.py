@@ -5,7 +5,7 @@ import netease
 import sys
 from pathlib import Path
 from pydub import AudioSegment
-from pedalboard import Pedalboard,Compressor,NoiseGate,HighShelfFilter,Gain,HighpassFilter
+from pedalboard import Pedalboard,Compressor,NoiseGate,Gain,HighpassFilter
 from pedalboard.io import AudioFile
 
 
@@ -13,35 +13,44 @@ class convert_music():
     def __init__(self):
         self.converting=[]
         self.converted=[]
+        self.net_music = netease.Netease_music()
+
+    def log_in_neteast(self):
+        self.net_music.log_in()
+    def download_music(self,music_name):
+        name, file_path = self.net_music.search_download_music(music_name)
+        return name,file_path
     def convert_music(self,vocal,song_name,file):
 
-        thread = threading.Thread(target=self.convert_file,kwargs={'file': file, 'song_name': song_name, 'vocal': vocal})
+        thread = threading.Thread(target=self.convert_Netease,kwargs={'file': file, 'song_name': song_name, 'vocal': vocal})
         thread.start()
 
-    def convert_file(self,song_name,vocal,file):
-        self.converting.append(song_name)
-        self.sep_song(song_name=song_name,file_path=file)
-        self.convert_vocals(song_name=song_name,vocal=vocal)
-        self.vocal_processing(song_name=song_name,vocal=vocal,file=file)
-        self.mix_music(song_name,vocal)
+    def convert_Netease(self,music_name,vocal):
+        name,file_path = self.download_music(music_name)
+        self.converting.append(name)
+        self.sep_song(song_name=name,file_path=file_path)
+        self.convert_vocals(song_name=name,vocal=vocal)
+        self.vocal_processing(song_name=name,vocal=vocal)
+        self.mix_music(name,vocal)
         self.converting.pop(0)
-        self.converted.append(song_name)
+        self.converted.append(name)
     def mix_music(self,song_name,vocal):
-        sound1 = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_vocals_{vocal}_processed.wav')
-        sound2 = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_instrum.wav')
+        Vocal = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_vocals_{vocal}_processed.wav')
+        Background_music = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_instrum.wav')
+        Chord = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_(Instrumental).wav')
+        Echo_sound = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_(Vocals)_(Echo).wav')
 
-        output = sound1.overlay(sound2)  # 把sound2叠加到sound1上面
-        output.export(f"output/{song_name}/{song_name}_{vocal}.wav", format="wav")  # 保存文件
+        output = Background_music.overlay(Vocal).overlay(Chord).overlay(Echo_sound)
+        output.export(f"output/{song_name}/{song_name}_{vocal}.wav", format="wav")
 
-    def vocal_processing(self,song_name,vocal,file=""):
+    def vocal_processing(self,song_name,vocal):
         board = Pedalboard(
             [NoiseGate(threshold_db=-15.0),Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
              HighpassFilter(cutoff_frequency_hz=110),
              Gain(gain_db=1)])
-        if file=="":
-            vocal_path=fr"output/{song_name}/{song_name}_vocals_{vocal}.wav"
-        else:
-            vocal_path=file
+
+        vocal_path=fr"output/{song_name}/{song_name}_vocals_{vocal}.wav"
+
 
         with AudioFile(vocal_path) as f:
             # Open an audio file to write to:
@@ -72,7 +81,5 @@ class convert_music():
 
 
 if __name__ =="__main__":
-    net_music=netease.Netease_music()
-    music_name=input("输入转换的歌曲")
-    name, file_name=net_music.search_download_music(music_name)
-    print(name,file_name)
+
+    pass

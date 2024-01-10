@@ -39,10 +39,10 @@ class Netease_music():
         song_url=json.loads(song_url)['data'][0]['url']
         song=self.netease.get(song_url)
         suffix = song_url.split(".")[-1]
-        file_name='./input/' + name + '.' + suffix
-        with open( file_name, 'wb') as f:
+        file_path='./input/' + name + '.' + suffix
+        with open( file_path, 'wb') as f:
             f.write(song.content)
-        return name,file_name
+        return name,file_path
 
     def download_music(self,id,level="exhigh"):
         if not os.path.exists('./input'):
