@@ -777,7 +777,7 @@ class Ensembler():
         self.main_export_path = Path(root.export_path_var.get())
         self.chosen_ensemble = f"_{chosen_ensemble_name}" if root.is_append_ensemble_name_var.get() else ''
         ensemble_folder_name = self.main_export_path if self.is_save_all_outputs_ensemble else ENSEMBLE_TEMP_PATH
-        self.ensemble_folder_name = os.path.join(ensemble_folder_name, '{}_Outputs_{}'.format(chosen_ensemble_name, time_stamp))
+        self.ensemble_folder_name = os.path.join(ensemble_folder_name, '{}_Outputs'.format(chosen_ensemble_name))
         self.is_testing_audio = f"{time_stamp}_" if root.is_testing_audio_var.get() else ''
         self.primary_algorithm = ensemble_algorithm[0]
         self.secondary_algorithm = ensemble_algorithm[2]
@@ -6230,10 +6230,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             return
 
         if self.chosen_process_method_var.get() != AUDIO_TOOLS:
-            if not self.process_preliminary_checks():
-                error_msg = INVALID_ENSEMBLE if self.chosen_process_method_var.get() == ENSEMBLE_MODE else INVALID_MODEL
-                self.error_dialoge(error_msg)
-                return
             target_function = self.process_start
         else:
             target_function = self.process_tool_start
@@ -6579,7 +6575,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
 
         global calling_process
         with cp_lock:
-            calling_process = True  
+            calling_process = True
 
         stime = time.perf_counter()
         time_elapsed = lambda:f'Time Elapsed: {time.strftime("%H:%M:%S", time.gmtime(int(time.perf_counter() - stime)))}'
