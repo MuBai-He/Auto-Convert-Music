@@ -62,13 +62,25 @@ import threading
 from bottle import request, response, route, run, ServerAdapter
 from urllib.parse import unquote
 import logging
-
+ 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 logging.info('UVR BEGIN')
 
+# if not is_macos:
+#     import torch_directml
+
+# is_choose_arch = cuda_available and directml_available
+# is_opencl_only = not cuda_available and directml_available
+# is_cuda_only = cuda_available and not directml_available
+
 is_gpu_available = cuda_available or mps_available# or directml_available
 
+# Change the current working directory to the directory
+# this file sits in
 if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app
+    # path into variable _MEIPASS'.
     BASE_PATH = sys._MEIPASS
 else:
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -333,6 +345,7 @@ def reset_timer(sec):
     cancel_timer()
     global timer_id
     timer_id = root.after(sec * 1000, root.save_values)
+
 class ModelData():
     def __init__(self, model_name: str, 
                  selected_process_method=ENSEMBLE_MODE, 
@@ -1548,7 +1561,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
     # def check_is_menu_settings_open(self):self.menu_settings() if not self.is_menu_settings_open else None
     def check_is_menu_settings_open(self):
         cancel_timer()
-        self.menu_settings() if not self.is_menu_settings_open else None
+        self.menu_settings() if not self.is_menu_settings_open else None   
     def spacer_label(self, frame): return tk.Label(frame, text='', font=(MAIN_FONT_NAME, f"{FONT_SIZE_1}"), foreground='#868687', justify="left").grid()
 
     #Ensemble Listbox Functions
@@ -5095,9 +5108,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         if ensemble_save_name:
             self.chosen_ensemble_var.set(ensemble_save_name)
             ensemble_save_name = ensemble_save_name.replace(" ", "_")
-
-            selected_ensemble_model.sort(key=lambda x: x[0])
-
+            selected_ensemble_model.sort(key=lambda x: x[0])    # !!!!
             saved_data = {
                 'ensemble_main_stem': self.ensemble_main_stem_var.get(),
                 'ensemble_type': self.ensemble_type_var.get(),
@@ -6033,10 +6044,9 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             self.ensemble_main_stem_var.set(saved_data['ensemble_main_stem'])
             self.ensemble_type_var.set(saved_data['ensemble_type'])
             self.saved_model_list = saved_data['selected_models']
-            # print("这里加载了混合模型的json设置")
+        
             for saved_model in self.saved_model_list:         
                 status = self.assemble_model_data(saved_model, ENSEMBLE_CHECK)[0].model_status
-                # print("模型是否存在的状态", status, "模型名称", saved_model, "模型是否存在", status, "\n")
                 if not status:
                     self.saved_model_list.remove(saved_model)
             
@@ -6072,7 +6082,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             
             self.model_stems_list = self.model_list(self.ensemble_primary_stem, self.ensemble_secondary_stem, is_4_stem_check=is_4_stem_check, is_multi_stem=is_multi_stem)
             self.model_stems_list.sort()
-            print("这里是model_stems_list",self.model_stems_list)
             self.ensemble_listbox_Option.configure(state=tk.NORMAL)
             self.ensemble_listbox_clear_and_insert_new(self.model_stems_list)
 
@@ -6098,10 +6107,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         if process_method:
             chosen_process_method = process_method
 
-        # print("selection", selection)
-        # print("chosen_process_method", chosen_process_method)
-        # print("process_method", process_method, "\n")
-        
         if selection in SAVE_SET_OPTIONS:
             self.handle_special_options(selection, chosen_process_method)
         else:
@@ -6135,7 +6140,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             
             if saved_data:
                 self.load_saved_settings(saved_data, process_method)
-                # print("这里加载了保存的json设置")
 
     #--Processing Methods-- 
 
@@ -6292,6 +6296,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         self.conversion_Button_Text_var.set(START_PROCESSING)
         self.conversion_Button.configure(state=tk.NORMAL)
         self.progress_bar_main_var.set(0)
+
         global calling_process
         with cp_lock:
             calling_process = False
@@ -6571,9 +6576,11 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         
     def process_start(self):
         """Start the conversion for all the given mp3 and wav files"""
+
         global calling_process
         with cp_lock:
             calling_process = True  
+
         stime = time.perf_counter()
         time_elapsed = lambda:f'Time Elapsed: {time.strftime("%H:%M:%S", time.gmtime(int(time.perf_counter() - stime)))}'
         export_path = self.export_path_var.get()
@@ -7186,7 +7193,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             
             self.destroy()
             webserver.stop()
-
+            
         elif is_auto_save:
             save_data(data={**main_settings, **other_data})
         else:
@@ -7257,7 +7264,25 @@ def vip_downloads(password, link_type=VIP_REPO):
         return str(f.decrypt(link_type[1]), 'UTF-8')
     except Exception:
         return NO_CODE
-   
+
+def extract_stems(audio_file_base, export_path):
+    
+    filenames = [file for file in os.listdir(export_path) if file.startswith(audio_file_base)]
+
+    pattern = r'\(([^()]+)\)(?=[^()]*\.wav)'
+    stem_list = []
+
+    for filename in filenames:
+        match = re.search(pattern, filename)
+        if match:
+            stem_list.append(match.group(1))
+            
+    counter = Counter(stem_list)
+    filtered_lst = [item for item in stem_list if counter[item] > 1]
+
+    return list(set(filtered_lst))
+
+
 def start_server():
     run(server=webserver)
 
@@ -7283,11 +7308,16 @@ class StoppableWSGIRefServer(ServerAdapter):
 calling_process = False
 cp_lock = threading.Lock()
 
+sel_model_map = {'vr': VR_ARCH_PM,
+    'md': MDX_ARCH_TYPE,
+    'de': DEMUCS_ARCH_TYPE,
+    'en':ENSEMBLE_MODE}
+
 def app_busy() -> bool:
     global calling_process
     with cp_lock:
-        b = calling_process
-    return b
+        busy = calling_process
+    return busy
 
 def check_volcal_only():
     root.is_primary_stem_only_var.set(False)
@@ -7310,83 +7340,106 @@ def check_all():
     root.is_secondary_stem_only_Demucs_var.set(False)
     return 'select all'
 
-# 选择单个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_settings
-@route('/select_saved_settings/<text>')
-def set_text(text):
-    if app_busy():
-        return 'Application busy now'
-    root.selection_action_saved_settings(text)
-    return "apply saved settings: " + text
-
-# 选择多个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_ensembles
-@route('/select_ensemble_settings/<text>')
-def set_ensemble_settings(text):
-    if app_busy():
-        return 'Application busy now'
-    root.selection_action_chosen_ensemble_load_saved(text)
-    return "apply ensemble settings: " + text
-
-# 选择人声或伴奏
-@route('/select_stem/<text>')
-def select_stem(text: str):
-    if app_busy():
-        return 'Application busy now'
-    tl = text.lower()
-    if tl.startswith('vo'):
-        return check_volcal_only()
-    elif tl.startswith('in'):
-        return check_instrumental_only()
-    return check_all()
-
-# 选择GPU
-@route('/GPU_enable/<val>')
-def GPU_enable(val: int):
-    if app_busy():
-        return 'Application busy now'
-    sw = bool((isinstance(val, int) and val != 0) or
-              (isinstance(val, str) and val.lower() in ('on','yes','1','ok'))
-    )
-    root.is_gpu_conversion_var.set(sw)
-    return f"GPU conversion {'on' if sw else 'off'}"
-
-sel_model_map = {'vr': VR_ARCH_PM,
-            'md': MDX_ARCH_TYPE,
-            'de': DEMUCS_ARCH_TYPE,
-            'mix':ENSEMBLE_MODE}
-
-# 选择模式
-@route('/select_method/<method_n2>')
-def select_method(method_n2):
-    if app_busy():
-        return 'Application busy now'
-    if method_n2 in ('vr', 'md', 'de','mix'):
-        root.chosen_process_method_var.set(sel_model_map[method_n2])
-        root.selection_action_process_method(sel_model_map[method_n2])
-        return f"select_model {method_n2}"
-    return "usage:/select_model/[vr|md|de]"
-
-# 输入音频路径
+# 输入的音频文件
 @route('/input')
-def get_file():
+def select_input_file():
     if app_busy():
         return 'Application busy now'
     encoded_path = request.query.path
     file_path = unquote(encoded_path, encoding='utf8')
     print(file_path)
     file_path = file_path.split(';')
-    # Set Variables
+
     root.inputPaths = tuple(file_path)
     root.process_input_selections()
     root.update_inputPaths()
     return file_path
 
-# 输出音频路径
+# 输出的音频路径
 @route('/output/<output_folder>')
 def select_output_folder(output_folder):
     if app_busy():
         return 'Application busy now'
+    print("output_folder", output_folder)
     root.export_path_var.set(output_folder)
     return f"select_output_folder {output_folder}"
+
+# 选择模式['vr', 'md', 'de' ,'en']
+@route('/select_method/<method>')
+def choose_process_method(method):
+    print("method",method)
+    if app_busy():
+        return 'Application busy now'
+    if method in ('vr', 'md', 'de','en'):
+        root.chosen_process_method_var.set(sel_model_map[method])
+        root.selection_action_process_method(sel_model_map[method])
+        return f"select_model {method}"
+    return "usage:/select_model/[vr|md|de|en]"
+
+# # 音频格式，wav、flac、mp3, 默认wav
+# @route('/select_audio_format/<audio_format>')
+# def select_audio_format(audio_format):
+#     print("audio_format",audio_format)
+#     if app_busy():
+#         return 'Application busy now'
+#     root.wav_type_set_var.set(audio_format)
+#     return f"select_audio_format {audio_format}"
+
+# 是否使用GPU,默认 True 
+@route('/select_device/<val>')
+def select_device(val: bool):
+    print("val",val)
+    if app_busy():
+        return 'Application busy now'
+    root.is_gpu_conversion_var.set(val)
+    return f"GPU conversion {'on' if val else 'off'}"
+
+# 选择人声、伴奏、全部 ["vo","in","all"] 目前不支持某些模型设置 Echo or No Echo
+@route('/select_stem/<stem>')
+def select_stem(stem: str):
+    if app_busy():
+        return 'Application busy now'
+    tl = stem.lower()
+    if tl.startswith('vo'):
+        return check_volcal_only()
+    elif tl.startswith('in'):
+        return check_instrumental_only()
+    return check_all()
+
+# 选择单个模型，模式选择 ['vr', 'md', 'de' ] 选择单个模型名字，路径ultimatevocalremovergui\models下的模型名字
+@route('/select_single_model/<model_name_and_method>')
+def choose_single_model(model_name_and_method):
+    model_name = model_name_and_method.split('|')[0]
+    and_mothod = model_name_and_method.split('|')[1]
+    if app_busy():
+        return 'Application busy now'
+    print("model_name",model_name)
+    if and_mothod == 'vr':
+        root.vr_model_var.set(model_name)
+    elif and_mothod == 'md':
+        root.mdx_net_model_var.set(model_name)
+    elif and_mothod == 'de':
+        root.demucs_model_var.set(model_name)
+    return f"select_single_model {model_name}"
+
+# 配置文件得自己在UI界面选择并配置。不带json后缀配置文件名
+# 加载单个模型的配置,模式选择 ['vr', 'md', 'de' ]选择单个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_settings
+@route('/select_saved_settings/<saved_settings>')
+def select_saved_settings(saved_settings):
+    print("select_saved_settings",saved_settings)
+    if app_busy():
+        return 'Application busy now'
+    root.selection_action_saved_settings(saved_settings)
+    return "apply saved settings: " + saved_settings
+
+# 加载多个模型的配置,模式选择 ['vr', 'md', 'de' ]选择多个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_ensembles
+@route('/select_ensemble_settings/<ensemble_settings>')
+def select_ensemble_settings(ensemble_settings):
+    print("ensemble_settings",ensemble_settings)
+    if app_busy():
+        return 'Application busy now'
+    root.selection_action_chosen_ensemble_load_saved(ensemble_settings)
+    return "apply ensemble settings: " + ensemble_settings
 
 # 开始推理
 @route('/start_processing')
@@ -7397,44 +7450,26 @@ def start_processing():
     root.process_initialize()
     return "start_processing pressed"
 
-# UI变小
 @route('/ui_min')
 def ui_min():
     root.iconify()
     return "application minimize"
 
-
-
-def extract_stems(audio_file_base, export_path):
-
-    filenames = [file for file in os.listdir(export_path) if file.startswith(audio_file_base)]
-
-    pattern = r'\(([^()]+)\)(?=[^()]*\.wav)'
-    stem_list = []
-
-    for filename in filenames:
-        match = re.search(pattern, filename)
-        if match:
-            stem_list.append(match.group(1))
-            
-    counter = Counter(stem_list)
-    filtered_lst = [item for item in stem_list if counter[item] > 1]
-
-    return list(set(filtered_lst))
-
 if __name__ == "__main__":
-
     try:
         windll.user32.SetThreadDpiAwarenessContext(wintypes.HANDLE(-1))
     except Exception as e:
         if OPERATING_SYSTEM == 'Windows':
             print(e)
+
     webserver = StoppableWSGIRefServer(host='localhost', port=8015)
     webserver.start()
 
     root = MainWindow()
     root.update_checkbox_text()
+
     reset_timer(5*60)
+
     root.is_root_defined_var.set(True)
     root.is_check_splash = True
 

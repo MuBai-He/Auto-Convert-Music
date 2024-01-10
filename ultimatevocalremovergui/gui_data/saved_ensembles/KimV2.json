@@ -1,0 +1,8 @@
+{
+    "ensemble_main_stem": "Multi-stem Ensemble",
+    "ensemble_type": "Max Spec",
+    "selected_models": [
+        "MDX-Net: Kim Vocal 2",
+        "VR Arc: UVR-DeNoise-Lite"
+    ]
+}
