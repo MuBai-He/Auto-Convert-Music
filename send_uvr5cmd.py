@@ -202,7 +202,7 @@ class Separation_Song:
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
-            single_model_separation(self.input_file_path, self.temp_folder, task, task_dict[task], None)
+            single_model_separation(self.input_file_path, self.temp_folder, task, self.task_dict[task], None)
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.info(f"第{idx}个模型分离完成")
 
