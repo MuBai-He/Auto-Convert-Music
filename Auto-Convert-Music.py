@@ -72,10 +72,7 @@ class convert_music():
     def sep_song(self, song_name ,file_path=""):
         Path('./output', song_name).mkdir(parents=True, exist_ok=True)
 
-        if file_path == "":
-            inference_task = sys.executable + ' ./send_uvr5cmd.py' + f' -i "input/{song_name}.mp3" -o "./output/{song_name}" -m mix -c mix-1'
-        else:
-            inference_task = sys.executable + ' ./send_uvr5cmd.py' + f' -i "{file_path}" -o "./output/{song_name}" -m mix -c mix-1'
+        inference_task = sys.executable + ' ./send_uvr5cmd.py' + f' -i "{file_path}" -o "./output/{song_name}" -m mix -c mix-1'
 
         subprocess.run(inference_task, shell=True)
 
