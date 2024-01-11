@@ -11,4 +11,10 @@ NeteaseCloudMusicApi
 
 .idea/
 
-ultimatevocalremovergui/models/
+ultimatevocalremovergui/models/MDX_Net_Models/MDX23C-8KFFT-InstVoc_HQ.ckpt
+ultimatevocalremovergui/models/VR_Models/6_HP-Karaoke-UVR.pth
+ultimatevocalremovergui/models/VR_Models/1_HP-UVR.pth
+ultimatevocalremovergui/models/VR_Models/UVR-De-Echo-Normal.pth
+ultimatevocalremovergui/models/VR_Models/UVR-DeNoise-Lite.pth
+ultimatevocalremovergui/models/MDX_Net_Models/UVR-MDX-NET-Inst_HQ_1.onnx
+ultimatevocalremovergui/models/MDX_Net_Models/UVR_MDXNET_KARA_2.onnx
