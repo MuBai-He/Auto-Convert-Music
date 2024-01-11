@@ -160,16 +160,14 @@ class Separation_Song:
         return model_name
         
     def wait_finish_inference(self,idx):
-        wait_finish = True
         model_name = str(self.get_model_name(idx)).lower()
         need_test_file = ["No","Echo"] if "echo" in model_name else ["Vocals", "Instrumental"]
         print(need_test_file)
-        while wait_finish:
+        while True:
             file_list = os.listdir(self.temp_folder)
             for file in file_list:
                 if need_test_file[0] in file:
                     time.sleep(4)
-                    wait_finish = False
                     return  need_test_file
                 
     def check_file_exist(self,temp_folder, idx):
@@ -202,12 +200,9 @@ if __name__ == "__main__":
     send_config = SendUvr5Config()
 
     default_task_dict = {'en':'KimV2','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
-    # default_task_dict = {'en':'KimV2','vr1':'6-HP'}
     parser = argparse.ArgumentParser(description='UVR5')
     parser.add_argument('-i', '--input_audio', type=str, help='input file path')    # 音频文件的绝对路径
     parser.add_argument('-o', '--output_folder', type=str, help='output folder')    # 输出文件夹的绝对路径
-    # parser.add_argument('-t', '--task_dict', default=default_task_dict, type=str, help='task dict')
-
     args = parser.parse_args()
 
     separation_song = Separation_Song(args.input_audio, args.output_folder, default_task_dict)
