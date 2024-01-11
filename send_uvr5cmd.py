@@ -1,3 +1,4 @@
+import subprocess
 from os import popen, system
 from time import sleep
 from urllib.parse import quote
@@ -98,18 +99,17 @@ class SendUvr5Config:
         if self.check_port_open():
             self.send_ui_min()
             return
-        uvr5cmd = Path(__file__).parent.parent / "cmd" / "start_uvr5.cmd"
-        if uvr5cmd.exists() and uvr5cmd.is_file():
-            system(str(uvr5cmd))
-            for _ in range(2):
-                sleep(6)
-                if self.check_port_open():
-                    self.send_ui_min()
-                    break
+        uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
+        subprocess.Popen(uvr5, shell=True)
+        for _ in range(2):
+            sleep(6)
+            if self.check_port_open():
+                self.send_ui_min()
+                break
 
 
 def single_model_separation(input_file_path, output_folder, task_mode, config_name = None, model_name = None):
-
+    send_config = SendUvr5Config()
     send_config.check_start_uvr5()
     while True:
         test_busy = send_config.send_input_file((input_file_path,))
@@ -190,6 +190,9 @@ class Separation_Song:
 
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 最终的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 最终的伴奏文件
+        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  # 最终的人声文件
+        shutil.copy(os.path.join(self.temp_folder, f"1_1-v_(Echo).wav"), os.path.join(self.output_folder, "Echo.wav"))    # 最终的伴奏文件
+
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
 
@@ -199,7 +202,7 @@ if __name__ == "__main__":
     配置文件得自己在UI界面选择并配置,config即为配置文件名,不带后缀。'''
     send_config = SendUvr5Config()
 
-    default_task_dict = {'en':'KimV2','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
+    default_task_dict = {'en':'mdx23c','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
     parser = argparse.ArgumentParser(description='UVR5')
     parser.add_argument('-i', '--input_audio', type=str, help='input file path')    # 音频文件的绝对路径
     parser.add_argument('-o', '--output_folder', type=str, help='output folder')    # 输出文件夹的绝对路径

@@ -33,27 +33,27 @@ class Netease_music():
     def search_download_music(self,song_name,level="exhigh"):
 
         id,name=self.search_music(song_name=song_name)
-        if not os.path.exists('./input'):
-            os.mkdir('./input')
+        if not os.path.exists('input'):
+            os.mkdir('input')
         song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
         song_url=json.loads(song_url)['data'][0]['url']
         song=self.netease.get(song_url)
         suffix = song_url.split(".")[-1]
-        file_path='./input/' + name + '.' + suffix
+        file_path='input\\' + name + '.' + suffix
         with open( file_path, 'wb') as f:
             f.write(song.content)
         return name,file_path
 
     def download_music(self,id,level="exhigh"):
-        if not os.path.exists('./input'):
-            os.mkdir('./input')
+        if not os.path.exists('input'):
+            os.mkdir('input')
         song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
         song_url=json.loads(song_url)['data'][0]['url']
         song=self.netease.get(song_url)
         name=self.netease.get(self.address+f"/song/detail?ids={id}").text
         name=json.loads(name)['songs'][0]['name']
         suffix = song_url.split(".")[-1]
-        file_name='./input/' + name + '.' + suffix
+        file_name='input\\' + name + '.' + suffix
         with open( file_name, 'wb') as f:
             f.write(song.content)
         return name,file_name
