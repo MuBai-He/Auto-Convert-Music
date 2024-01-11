@@ -2,7 +2,6 @@
     "ensemble_main_stem": "Multi-stem Ensemble",
     "ensemble_type": "Max Spec",
     "selected_models": [
-        "MDX-Net: MDX23C-InstVoc HQ",
-        "VR Arc: UVR-DeNoise-Lite"
+        "MDX-Net: MDX23C-InstVoc HQ"
     ]
 }

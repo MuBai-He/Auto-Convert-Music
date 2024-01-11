@@ -333,7 +333,7 @@ def drop(event, accept_mode: str = 'files'):
     else:
         return    
 
-def cancel_timer():
+def cancel_timer():     # 取消定时器
     global timer_id
     try:
         root.after_cancel(timer_id) if timer_id else None
@@ -341,7 +341,7 @@ def cancel_timer():
         pass
     timer_id = 0
 
-def reset_timer(sec):
+def reset_timer(sec):   # 重置定时器
     cancel_timer()
     global timer_id
     timer_id = root.after(sec * 1000, root.save_values)
@@ -777,7 +777,8 @@ class Ensembler():
         self.main_export_path = Path(root.export_path_var.get())
         self.chosen_ensemble = f"_{chosen_ensemble_name}" if root.is_append_ensemble_name_var.get() else ''
         ensemble_folder_name = self.main_export_path if self.is_save_all_outputs_ensemble else ENSEMBLE_TEMP_PATH
-        self.ensemble_folder_name = os.path.join(ensemble_folder_name, '{}_Outputs'.format(chosen_ensemble_name))
+        # self.ensemble_folder_name = os.path.join(ensemble_folder_name, '{}_Outputs'.format(chosen_ensemble_name))
+        self.ensemble_folder_name = ensemble_folder_name    # 支持ensemble模式下，运行后产生的文件只在指定的输出目录下，而不会创建一个新的目录
         self.is_testing_audio = f"{time_stamp}_" if root.is_testing_audio_var.get() else ''
         self.primary_algorithm = ensemble_algorithm[0]
         self.secondary_algorithm = ensemble_algorithm[2]
@@ -788,8 +789,8 @@ class Ensembler():
         self.wav_type_set = root.wav_type_set
         self.mp3_bit_set = root.mp3_bit_set_var.get()
         self.save_format = root.save_format_var.get()
-        if not is_manual_ensemble:
-            os.mkdir(self.ensemble_folder_name)
+        # if not is_manual_ensemble:
+        #     os.mkdir(self.ensemble_folder_name)   # 删除，以免报错
 
     def ensemble_outputs(self, audio_file_base, export_path, stem, is_4_stem=False, is_inst_mix=False):
         """Processes the given outputs and ensembles them with the chosen algorithm"""
@@ -1559,8 +1560,8 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
     def menu_sub_LABEL_SET(self, frame, text, font_size=FONT_SIZE_2):return ttk.Label(master=frame, text=text, font=(MAIN_FONT_NAME, f"{font_size}"), foreground=FG_COLOR, anchor=tk.CENTER)
     def menu_FRAME_SET(self, frame, thickness=20):return tk.Frame(frame, highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthicknes=thickness)
     # def check_is_menu_settings_open(self):self.menu_settings() if not self.is_menu_settings_open else None
-    def check_is_menu_settings_open(self):
-        cancel_timer()
+    def check_is_menu_settings_open(self): 
+        cancel_timer()          # 如果菜单已经打开，就取消计时器
         self.menu_settings() if not self.is_menu_settings_open else None   
     def spacer_label(self, frame): return tk.Label(frame, text='', font=(MAIN_FONT_NAME, f"{FONT_SIZE_1}"), foreground='#868687', justify="left").grid()
 
@@ -5070,7 +5071,8 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         validation = lambda value:False if re.fullmatch(REG_SAVE_INPUT, value) is None else True
         save_func = lambda:(self.pop_up_save_ensemble_sub_json_dump(self.ensemble_listbox_get_all_selected_models(), ensemble_save_var.get()), ensemble_save.destroy())
 
-        if len(self.ensemble_listbox_get_all_selected_models()) <= 1:
+        # if len(self.ensemble_listbox_get_all_selected_models()) <= 1:
+        if len(self.ensemble_listbox_get_all_selected_models()) <= 0:   # ensemble 支持保存一个模型
             ensemble_save_title = self.menu_title_LABEL_SET(ensemble_save_Frame, ENSEMBLE_WARNING_NOT_ENOUGH_SHORT_TEXT, width=20)
             ensemble_save_title.grid()
             
@@ -5108,7 +5110,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         if ensemble_save_name:
             self.chosen_ensemble_var.set(ensemble_save_name)
             ensemble_save_name = ensemble_save_name.replace(" ", "_")
-            selected_ensemble_model.sort(key=lambda x: x[0])    # !!!!
+            selected_ensemble_model.sort(key=lambda x: x[0])    # ensemble 保存配置文件时，按照模型名称排序
             saved_data = {
                 'ensemble_main_stem': self.ensemble_main_stem_var.get(),
                 'ensemble_type': self.ensemble_type_var.get(),
@@ -6081,7 +6083,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                 is_4_stem_check = False
             
             self.model_stems_list = self.model_list(self.ensemble_primary_stem, self.ensemble_secondary_stem, is_4_stem_check=is_4_stem_check, is_multi_stem=is_multi_stem)
-            self.model_stems_list.sort()
+            self.model_stems_list.sort()    # ensemble 模式下，加载配置文件后，模型列表排序， 按顺序推理
             self.ensemble_listbox_Option.configure(state=tk.NORMAL)
             self.ensemble_listbox_clear_and_insert_new(self.model_stems_list)
 
@@ -6293,10 +6295,10 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         self.conversion_Button.configure(state=tk.NORMAL)
         self.progress_bar_main_var.set(0)
 
-        global calling_process
+        global calling_process      # 用于判断是否正在推理
         with cp_lock:
             calling_process = False
-        reset_timer(30)
+        reset_timer(300)
 
         if error:
             error_message_box_text = f'{error_dialouge(error)}{ERROR_OCCURED[1]}'
@@ -6573,7 +6575,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
     def process_start(self):
         """Start the conversion for all the given mp3 and wav files"""
 
-        global calling_process
+        global calling_process      # 用于判断是否有推理任务正在进行！！！
         with cp_lock:
             calling_process = True
 
@@ -7188,7 +7190,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                     subprocess.Popen(f'python "{__file__}"', shell=True)
             
             self.destroy()
-            webserver.stop()
+            webserver.stop()    # 停止webserver ！！
             
         elif is_auto_save:
             save_data(data={**main_settings, **other_data})
@@ -7340,7 +7342,7 @@ def check_all():
 @route('/input')
 def select_input_file():
     if app_busy():
-        return 'Application busy now'
+        return 'Application busy now,tootoobusy'
     encoded_path = request.query.path
     file_path = unquote(encoded_path, encoding='utf8')
     print(file_path)
@@ -7369,7 +7371,7 @@ def choose_process_method(method):
     if method in ('vr', 'md', 'de','en'):
         root.chosen_process_method_var.set(sel_model_map[method])
         root.selection_action_process_method(sel_model_map[method])
-        return f"select_model {method}"
+        return f"select_model {sel_model_map[method]}"
     return "usage:/select_model/[vr|md|de|en]"
 
 # # 音频格式，wav、flac、mp3, 默认wav
@@ -7420,13 +7422,13 @@ def choose_single_model(model_name_and_method):
 
 # 配置文件得自己在UI界面选择并配置。不带json后缀配置文件名
 # 加载单个模型的配置,模式选择 ['vr', 'md', 'de' ]选择单个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_settings
-@route('/select_saved_settings/<saved_settings>')
-def select_saved_settings(saved_settings):
-    print("select_saved_settings",saved_settings)
+@route('/select_saved_setting/<saved_setting>')
+def select_saved_settings(saved_setting):
+    print("select_saved_setting",saved_setting)
     if app_busy():
         return 'Application busy now'
-    root.selection_action_saved_settings(saved_settings)
-    return "apply saved settings: " + saved_settings
+    root.selection_action_saved_settings(saved_setting)
+    return "apply saved settings: " + saved_setting
 
 # 加载多个模型的配置,模式选择 ['vr', 'md', 'de' ]选择多个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_ensembles
 @route('/select_ensemble_settings/<ensemble_settings>')
@@ -7458,13 +7460,13 @@ if __name__ == "__main__":
         if OPERATING_SYSTEM == 'Windows':
             print(e)
 
-    webserver = StoppableWSGIRefServer(host='localhost', port=8015)
-    webserver.start()
+    webserver = StoppableWSGIRefServer(host='localhost', port=8015) # !!
+    webserver.start()   # 启动！！
 
     root = MainWindow()
     root.update_checkbox_text()
 
-    reset_timer(5*60)
+    reset_timer(5*60)   # 5分钟后自动关闭
 
     root.is_root_defined_var.set(True)
     root.is_check_splash = True

@@ -17,9 +17,11 @@ class convert_music():
 
     def log_in_neteast(self):
         self.net_music.log_in()
+
     def download_music(self,music_name):
         name, file_path = self.net_music.search_download_music(music_name)
         return name,file_path
+    
     def convert_music(self,vocal,song_name,file):
 
         thread = threading.Thread(target=self.convert_Netease,kwargs={'file': file, 'song_name': song_name, 'vocal': vocal})
@@ -34,6 +36,7 @@ class convert_music():
         self.mix_music(name,vocal)
         self.converting.pop(0)
         self.converted.append(name)
+
     def mix_music(self,song_name,vocal):
         Vocal = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_vocals_{vocal}_processed.wav')
         Background_music = AudioSegment.from_wav(rf'output/{song_name}/{song_name}_instrum.wav')
@@ -64,6 +67,7 @@ class convert_music():
 
                     # Write the output to our output file:
                     o.write(effected)
+
     def convert_vocals(self,song_name, vocal):
         infer_vocals_end = f'./output/{song_name}/{song_name}_vocals.wav'
         convert_vocals = sys.executable + " ./sovits4.1/inference_main.py " + f'-n "{infer_vocals_end}" -s {vocal}'
@@ -72,7 +76,7 @@ class convert_music():
     def sep_song(self, song_name ,file_path=""):
         Path('./output', song_name).mkdir(parents=True, exist_ok=True)
 
-        inference_task = sys.executable + ' ./send_uvr5cmd.py' + f' -i "{file_path}" -o "./output/{song_name}" -m mix -c mix-1'
+        inference_task = sys.executable + ' ./send_uvr5cmd.py' + f' -i "{file_path}" -o "./output/{song_name}"'
 
         subprocess.run(inference_task, shell=True)
 

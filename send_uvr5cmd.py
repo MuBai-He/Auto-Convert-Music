@@ -8,6 +8,7 @@ import argparse
 import os
 import shutil
 import time
+import json
 import loguru
 
 class SendUvr5Config:
@@ -25,6 +26,7 @@ class SendUvr5Config:
         req = requests.get(f'{self.site}/input?path={uri}')
         if req.ok:
             print(req.content.decode(encoding='utf8'))
+            return req.content.decode(encoding='utf8')
     
     # 选择输出路径
     def send_output_folder(self,select_output):
@@ -72,7 +74,7 @@ class SendUvr5Config:
     # 配置文件得自己在UI界面选择并配置。不带json后缀配置文件名
     # 加载单个模型的配置,模式选择 ['vr', 'md', 'de' ]选择单个模型的json配置文件名，ultimatevocalremovergui\gui_data\saved_settings
     def load_saved_settings(self,model_config_name):
-        req = requests.get(f'{self.site}/select_saved_settings/{model_config_name}')
+        req = requests.get(f'{self.site}/select_saved_setting/{model_config_name}')
         if req.ok:
             print(req.text)
 
@@ -109,7 +111,12 @@ class SendUvr5Config:
 def single_model_separation(input_file_path, output_folder, task_mode, config_name = None, model_name = None):
 
     send_config.check_start_uvr5()
-    send_config.send_input_file((input_file_path,))
+    while True:
+        test_busy = send_config.send_input_file((input_file_path,))
+        if "tootoobusy" not in test_busy:
+            break
+        time.sleep(2)
+
     send_config.send_output_folder(output_folder)
     send_config.send_choose_process_method(task_mode)
 
@@ -136,92 +143,76 @@ class Separation_Song:
             os.mkdir(self.temp_folder)
         self.output_folder = output_folder
         self.task_dict = task_dict
+        self.keys_list = list(self.task_dict.keys())
+        self.values_list = list(self.task_dict.values())
 
-    def get_all_file(self,file_path):
-        file_list = []
-        for root, dirs, files in os.walk(file_path):
-            for file in files:
-                file_list.append(os.path.join(root, file))
-        return file_list
-
-    def delete_folder(self,file_path):
-        folder_list = []
-        for root, folders, files in os.walk(file_path):
-            for folder in folders:
-                folder_list.append(os.path.join(root, folder))
-        shutil.rmtree(file_path)
-
+    def get_model_name(self,idx):
+        if self.keys_list[idx].lower()[:2] == 'en':
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultimatevocalremovergui\gui_data\saved_ensembles", self.values_list[idx]+".json")
+        else:
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultimatevocalremovergui\gui_data\saved_settings", self.values_list[idx]+".json")
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+            if self.keys_list[idx].lower()[:2] == 'en':
+                model_name = config["selected_models"]
+            else:
+                model_name = list(config.values())[0]
+        return model_name
+        
+    def wait_finish_inference(self,idx):
+        wait_finish = True
+        model_name = str(self.get_model_name(idx)).lower()
+        need_test_file = ["No","Echo"] if "echo" in model_name else ["Vocals", "Instrumental"]
+        print(need_test_file)
+        while wait_finish:
+            file_list = os.listdir(self.temp_folder)
+            for file in file_list:
+                if need_test_file[0] in file:
+                    time.sleep(4)
+                    wait_finish = False
+                    return  need_test_file
+                
     def check_file_exist(self,temp_folder, idx):
-        # 1、分离人声和伴奏
-        if idx == 0:
-            wait_noise_file = True
-            while wait_noise_file:
-                file_list = self.get_all_file(temp_folder)
-                for file in file_list:
-                    if "Noise" in file:
-                        time.sleep(1)
-                        wait_noise_file = False
-
-            for file in file_list:
-                if "Vocals" in file:
-                    shutil.copy(file, os.path.join(temp_folder, f"{idx}-v.wav")) # 0-v.wav 人声   mdx_model
-                    self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")  # 更改输入文件路径
-                elif "Instrumental" in file:
-                    shutil.copy(file, os.path.join(temp_folder, f"{idx}-i.wav")) # 0-i.wav 伴奏
-            # self.delete_folder(temp_folder)
-
-        # 2、去和声
-        elif idx == 1:
-            wait_vocals_file = True
-            while wait_vocals_file:
-                file_list = self.get_all_file(temp_folder)
-                for file in file_list:
-                    if "Vocals" in file:
-                        time.sleep(1)
-                        wait_noise_file = False
-
-            for file in file_list:
-                if "Vocals" in file:
-                    os.rename(file, os.path.join(temp_folder, f"{idx}-v.wav"))
-                    self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")  # 更改输入文件路径
-                elif "Instrumental" in file:
-                    os.rename(file, os.path.join(temp_folder, f"{idx}-i.wav"))
-        # 3、去混响
-        elif idx == 2:
-            wait_echo_file = True
-            while wait_echo_file:
-                file_list = self.get_all_file(temp_folder)
-                for file in file_list:
-                    if "Echo" in file:
-                        time.sleep(1)
-                        wait_echo_file = False
-
-            for file in file_list:
-                if "No" in file:
-                    os.rename(file, os.path.join(temp_folder, f"{idx}-v.wav")) # 最终的人声
+        need_rename = self.wait_finish_inference(idx)
+        for file in os.listdir(temp_folder):
+            if need_rename[0] in file:
+                shutil.move(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-v.wav"))
+                time.sleep(3)
+                self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")
+            elif need_rename[1] in file:
+                shutil.move(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-i.wav"))
+                time.sleep(3)
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
-            single_model_separation(self.input_file_path, self.temp_folder, task, self.task_dict[task], None)
+            loguru.logger.info(f"开始第{idx}个模型分离,模型任务为：{self.task_dict[task]}")
+            single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.info(f"第{idx}个模型分离完成")
 
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "vocals.wav"))
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 最终的人声文件
+        shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 最终的伴奏文件
         time.sleep(1)
-        # shutil.rmtree(self.temp_folder)
+        shutil.rmtree(self.temp_folder)     # 删除临时文件夹
 
 if __name__ == "__main__":
-    '''配置文件得自己在UI界面选择并配置,config即为配置文件名,不带后缀。'''
+    '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
+    mdx系列只能配置Ensemble模式, 在MDX模式下配置,保存后的配置文件中的模型名并不是你选择的。VR系列可以在VR模式下配置
+    配置文件得自己在UI界面选择并配置,config即为配置文件名,不带后缀。'''
     send_config = SendUvr5Config()
 
-    default_task_dict = {'en':'KimV2','vr':'6-HP','vr': 'De-Echo-Normal'}
+    default_task_dict = {'en':'KimV2','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
+    # default_task_dict = {'en':'KimV2','vr1':'6-HP'}
     parser = argparse.ArgumentParser(description='UVR5')
-    parser.add_argument('-i', '--input_audio', type=str, help='input file path')
-    parser.add_argument('-o', '--output_folder', type=str, help='output folder')
-    parser.add_argument('-t', '--task_dict', default= default_task_dict, type=str, help='task dict')
+    parser.add_argument('-i', '--input_audio', type=str, help='input file path')    # 音频文件的绝对路径
+    parser.add_argument('-o', '--output_folder', type=str, help='output folder')    # 输出文件夹的绝对路径
+    # parser.add_argument('-t', '--task_dict', default=default_task_dict, type=str, help='task dict')
 
     args = parser.parse_args()
 
-    separation_song = Separation_Song(args.input_audio, args.output_folder, args.task_dict)
+    separation_song = Separation_Song(args.input_audio, args.output_folder, default_task_dict)
+    # separation_song = Separation_Song(r"D:\Project\test_uvr5\audio\input\lovely.mp3", r"D:\Project\test_uvr5\audio\output", default_task_dict)
     separation_song.multi_model_order_separation()
-    
+
+    # 运行完成后，输出文件夹中会有两个文件，Vocals.wav为人声，Instrumental.wav为伴奏，temp文件夹为临时文件夹，会自动删除
+    # python send_uvr5cmd.py -i "D:\test\test.wav" -o "D:\test\test"
