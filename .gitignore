@@ -7,7 +7,8 @@ input/
 *.pyc
 netease.txt
 sovits4.1/pretrain/rmvpe.pt
-start_uvr5.cmd
 NeteaseCloudMusicApi
 
 .idea/
+
+ultimatevocalremovergui/models/
