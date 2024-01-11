@@ -18,3 +18,5 @@ ultimatevocalremovergui/models/VR_Models/UVR-De-Echo-Normal.pth
 ultimatevocalremovergui/models/VR_Models/UVR-DeNoise-Lite.pth
 ultimatevocalremovergui/models/MDX_Net_Models/UVR-MDX-NET-Inst_HQ_1.onnx
 ultimatevocalremovergui/models/MDX_Net_Models/UVR_MDXNET_KARA_2.onnx
+ultimatevocalremovergui/models/Demucs_Models/v3_v4_repo/htdemucs.yaml
+ultimatevocalremovergui/models/Demucs_Models/v3_v4_repo/955717e8-8726e21a.th
