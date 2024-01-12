@@ -20,6 +20,7 @@ class SendUvr5Config:
         self.device = device
         self.select_stem = select_stem
         self.ui_min = ui_min
+        self.UVR_PID = None
 
     # 发送输入的音频文件
     def send_input_file(self,select_input):
@@ -100,7 +101,8 @@ class SendUvr5Config:
             self.send_ui_min()
             return
         uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
-        subprocess.Popen(uvr5, shell=True)
+        process = subprocess.Popen(uvr5, shell=True)
+        self.UVR_PID = process.pid
         for _ in range(2):
             sleep(6)
             if self.check_port_open():
@@ -186,7 +188,7 @@ class Separation_Song:
             loguru.logger.info(f"开始第{idx}个模型分离,模型任务为：{self.task_dict[task]}")
             single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             self.check_file_exist(self.temp_folder, idx)
-            loguru.logger.info(f"第{idx}个模型分离完成")
+            loguru.logger.success(f"第{idx}个模型分离完成")
         time.sleep(1)
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
@@ -195,6 +197,10 @@ class Separation_Song:
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
+        if send_config.UVR_PID:
+            loguru.logger.info(f"推理完毕,正在结束uvr5进程 {send_config.UVR_PID}")
+            system(f'taskkill /F /PID {send_config.UVR_PID}')
+            loguru.logger.success(f"uvr5进程结束 {send_config.UVR_PID}")
 
 if __name__ == "__main__":
     '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
