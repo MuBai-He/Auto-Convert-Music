@@ -107,15 +107,15 @@ class SendUvr5Config:
                 self.send_ui_min()
                 break
 
+send_config = SendUvr5Config()
 
 def single_model_separation(input_file_path, output_folder, task_mode, config_name = None, model_name = None):
-    send_config = SendUvr5Config()
     send_config.check_start_uvr5()
     while True:
         test_busy = send_config.send_input_file((input_file_path,))
         if "tootoobusy" not in test_busy:
             break
-        time.sleep(2)
+        time.sleep(1)
 
     send_config.send_output_folder(output_folder)
     send_config.send_choose_process_method(task_mode)
@@ -174,12 +174,12 @@ class Separation_Song:
         need_rename = self.wait_finish_inference(idx)
         for file in os.listdir(temp_folder):
             if need_rename[0] in file:
-                shutil.move(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-v.wav"))
-                time.sleep(3)
+                os.rename(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-v.wav"))
                 self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")
+                time.sleep(1)
             elif need_rename[1] in file:
-                shutil.move(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-i.wav"))
-                time.sleep(3)
+                os.rename(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-i.wav"))
+                time.sleep(1)
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
@@ -188,10 +188,10 @@ class Separation_Song:
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.info(f"第{idx}个模型分离完成")
         time.sleep(1)
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 最终的人声文件
-        shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 最终的伴奏文件
-        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  # 最终的人声文件
-        shutil.copy(os.path.join(self.temp_folder, f"1_1-v_(Echo).wav"), os.path.join(self.output_folder, "Echo.wav"))    # 最终的伴奏文件
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
+        shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
+        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.output_folder, "Echo.wav"))    
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
@@ -200,7 +200,6 @@ if __name__ == "__main__":
     '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
     mdx系列只能配置Ensemble模式, 在MDX模式下配置,保存后的配置文件中的模型名并不是你选择的。VR系列可以在VR模式下配置
     配置文件得自己在UI界面选择并配置,config即为配置文件名,不带后缀。'''
-    send_config = SendUvr5Config()
 
     default_task_dict = {'en':'mdx23c','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
     parser = argparse.ArgumentParser(description='UVR5')
