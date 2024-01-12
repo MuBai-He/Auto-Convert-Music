@@ -187,7 +187,7 @@ class Separation_Song:
             single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.info(f"第{idx}个模型分离完成")
-
+        time.sleep(1)
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 最终的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 最终的伴奏文件
         shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  # 最终的人声文件

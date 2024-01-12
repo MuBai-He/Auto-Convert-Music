@@ -51,9 +51,9 @@ class convert_music():
 
     def vocal_processing(self,song_name,vocal):
         board = Pedalboard(
-            [NoiseGate(threshold_db=-15.0),Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
+            [Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
              HighpassFilter(cutoff_frequency_hz=110),
-             Gain(gain_db=1)])
+             Gain(gain_db=3)])
 
         vocal_path=fr"output/{song_name}/Vocals_{vocal}.wav"
 
@@ -86,5 +86,5 @@ class convert_music():
 
 if __name__ =="__main__":
     music_moudle=convert_music()
-    music_moudle.convert_Netease(music_name="17岁的歌",vocal="刻晴[中]")
+    music_moudle.convert_Netease(music_name="運命の人 『ユイカ』",vocal="刻晴[中]")
 
