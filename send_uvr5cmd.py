@@ -191,7 +191,7 @@ class Separation_Song:
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
         shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.output_folder, "Echo.wav"))    
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Echo.wav"))    
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹

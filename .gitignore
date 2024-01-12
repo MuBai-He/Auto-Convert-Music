@@ -1,6 +1,5 @@
 /sovits4.1/pretrain/checkpoint_best_legacy_500.pt
 /sovits4.1/logs/44k/
-/mdx23/models/
 /output/
 input/
 
@@ -11,12 +10,4 @@ NeteaseCloudMusicApi
 
 .idea/
 
-ultimatevocalremovergui/models/MDX_Net_Models/MDX23C-8KFFT-InstVoc_HQ.ckpt
-ultimatevocalremovergui/models/VR_Models/6_HP-Karaoke-UVR.pth
-ultimatevocalremovergui/models/VR_Models/1_HP-UVR.pth
-ultimatevocalremovergui/models/VR_Models/UVR-De-Echo-Normal.pth
-ultimatevocalremovergui/models/VR_Models/UVR-DeNoise-Lite.pth
-ultimatevocalremovergui/models/MDX_Net_Models/UVR-MDX-NET-Inst_HQ_1.onnx
-ultimatevocalremovergui/models/MDX_Net_Models/UVR_MDXNET_KARA_2.onnx
-ultimatevocalremovergui/models/Demucs_Models/v3_v4_repo/htdemucs.yaml
-ultimatevocalremovergui/models/Demucs_Models/v3_v4_repo/955717e8-8726e21a.th
+ultimatevocalremovergui/models/
