@@ -1,5 +1,5 @@
 #coding=UTF-8
-import subprocess
+import queue
 import threading
 from send_uvr5cmd import *
 import netease
@@ -17,27 +17,38 @@ class convert_music():
         self.converting=[]
         self.converted=[]
         self.net_music = netease.Netease_music()
+        self.waiting_queue = queue.Queue()
 
     def log_in_neteast(self):
         self.net_music.log_in()
 
+    def add_conversion_task(self, music_name, vocal):
+        name, file_path = self.download_music(music_name)
+        if name not in self.converting:
+            self.converting.append(name)
+            thread = threading.Thread(target=self.convert_music, kwargs={'music_name': name, 'vocal': vocal, 'file_path': file_path})
+            thread.start()
+        else:
+            self.waiting_queue.put((music_name, vocal))
+
+    def check_waiting_queue(self):
+        if not self.waiting_queue.empty() and len(self.converting) < self.max_converting_tasks:
+            music_name, vocal = self.waiting_queue.get()
+            self.add_conversion_task(music_name, vocal)
+
     def download_music(self,music_name):
         name, file_path = self.net_music.search_download_music(music_name)
         return name,file_path
-    
-    def convert_music(self,music_name,vocal):
 
-        thread = threading.Thread(target=self.convert_Netease,kwargs={'music_name': music_name, 'vocal': vocal})
-        thread.start()
 
-    def convert_Netease(self,music_name,vocal):
-        name,file_path = self.download_music(music_name)
-        self.converting.append(name)
+    def convert_music(self, name, vocal, file_path):
+
         self.sep_song(song_name=name,file_path=file_path)
         self.convert_vocals(song_name=name,vocal=vocal)
         self.vocal_processing(song_name=name,vocal=vocal)
         self.mix_music(name,vocal)
-        self.converting.pop(0)
+        self.converting.remove(name)
+        self.check_waiting_queue()
         self.converted.append(name)
 
     def mix_music(self,song_name,vocal):
@@ -86,5 +97,5 @@ class convert_music():
 
 if __name__ =="__main__":
     music_moudle=convert_music()
-    music_moudle.convert_Netease(music_name="運命の人 『ユイカ』",vocal="刻晴[中]")
+    music_moudle.convert_music(music_name="運命の人 『ユイカ』", vocal="刻晴[中]")
 
