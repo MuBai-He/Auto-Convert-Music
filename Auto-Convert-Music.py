@@ -24,8 +24,8 @@ class convert_music():
 
     def add_conversion_task(self, music_name, vocal):
         name, file_path = self.download_music(music_name)
+        self.converting.append(name)
         if name not in self.converting:
-            self.converting.append(name)
             thread = threading.Thread(target=self.convert_music, kwargs={'music_name': name, 'vocal': vocal, 'file_path': file_path})
             thread.start()
         else:
@@ -97,5 +97,5 @@ class convert_music():
 
 if __name__ =="__main__":
     music_moudle=convert_music()
-    music_moudle.convert_music(music_name="運命の人 『ユイカ』", vocal="刻晴[中]")
+    music_moudle.add_conversion_task(music_name="運命の人 『ユイカ』", vocal="刻晴[中]")
 
