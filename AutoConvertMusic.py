@@ -25,14 +25,14 @@ class convert_music():
     def add_conversion_task(self, music_name, vocal):
         name, file_path = self.download_music(music_name)
         self.converting.append(name)
-        if name not in self.converting:
-            thread = threading.Thread(target=self.convert_music, kwargs={'music_name': name, 'vocal': vocal, 'file_path': file_path})
+        if len(self.converting)==1:
+            thread = threading.Thread(target=self.convert_music, kwargs={'name': name, 'vocal': vocal, 'file_path': file_path})
             thread.start()
         else:
             self.waiting_queue.put((music_name, vocal))
 
     def check_waiting_queue(self):
-        if not self.waiting_queue.empty() and len(self.converting) < self.max_converting_tasks:
+        if not self.waiting_queue.empty() and len(self.converting) < 1:
             music_name, vocal = self.waiting_queue.get()
             self.add_conversion_task(music_name, vocal)
 
