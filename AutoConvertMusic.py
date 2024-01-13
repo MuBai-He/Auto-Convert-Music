@@ -27,9 +27,9 @@ class convert_music():
 
     def add_conversion_task(self, music_name, vocal):
         name, file_path = self.download_music(music_name)
-        self.converting.append(name)
-        if len(self.converting)==1:
-
+        print(self.converting)
+        if len(self.converting)==0:
+            self.converting.append(name)
             thread = threading.Thread(target=self.convert_music, kwargs={'name': name, 'vocal': vocal, 'file_path': file_path})
             thread.start()
         else:
@@ -46,7 +46,6 @@ class convert_music():
 
 
     def convert_music(self, name, vocal, file_path):
-
         self.sep_song(song_name=name,file_path=file_path)
         self.convert_vocals(song_name=name,vocal=vocal)
         self.vocal_processing(song_name=name,vocal=vocal)
@@ -97,7 +96,6 @@ class convert_music():
         Path("./output", song_name).mkdir(parents=True, exist_ok=True)
         separation_song = Separation_Song(file_ex_path ,output_path , self.default_task_dict)
         separation_song.multi_model_order_separation()
-
 
 if __name__ =="__main__":
     music_moudle=convert_music()
