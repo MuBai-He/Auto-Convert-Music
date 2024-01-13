@@ -34,7 +34,7 @@ def get_audio(song_name):
     try:
         return send_file(matching_files, as_attachment=False)
     except:
-        abort(403, description="Audio file not found")
+        abort(404, description="Audio file not found")
 
 if __name__ == '__main__':
     app.run(debug=True,port=1717)

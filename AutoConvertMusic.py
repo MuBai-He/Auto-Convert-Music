@@ -1,6 +1,8 @@
 #coding=UTF-8
 import queue
 import threading
+import time
+
 from send_uvr5cmd import *
 import netease
 import sys
@@ -18,6 +20,8 @@ class convert_music():
         self.converted=[]
         self.net_music = netease.Netease_music()
         self.waiting_queue = queue.Queue()
+        self.check_noneconvert=threading.Thread(target=self.check_waiting_queue)
+        self.check_noneconvert.start()
 
     def log_in_neteast(self):
         self.net_music.log_in()
@@ -25,14 +29,15 @@ class convert_music():
     def add_conversion_task(self, music_name, vocal):
         name, file_path = self.download_music(music_name)
         self.converting.append(name)
-        if len(self.converting)==1:
+        if len(self.converting)==0:
             thread = threading.Thread(target=self.convert_music, kwargs={'name': name, 'vocal': vocal, 'file_path': file_path})
             thread.start()
         else:
             self.waiting_queue.put((music_name, vocal))
 
     def check_waiting_queue(self):
-        if not self.waiting_queue.empty() and len(self.converting) < 1:
+        time.sleep(1)
+        if not self.waiting_queue.empty() and len(self.converting) == 0:
             music_name, vocal = self.waiting_queue.get()
             self.add_conversion_task(music_name, vocal)
 
