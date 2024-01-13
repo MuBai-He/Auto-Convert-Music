@@ -6,13 +6,12 @@ from AutoConvertMusic import *
 
 music_moudle = convert_music()
 file_list=os.listdir("output\\")
-converted_list={}
 
 app = Flask(__name__)
 
 @app.route('/status', methods=['GET'])
 def get_status():
-
+    file_list = os.listdir("output\\")
 
     # 返回converting和converted的状态
     return jsonify({

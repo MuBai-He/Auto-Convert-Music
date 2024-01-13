@@ -4,6 +4,8 @@ from time import sleep
 from urllib.parse import quote
 import requests
 import sys
+import win32gui
+from win32.lib import win32con
 from pathlib import Path
 import argparse
 import os
@@ -171,7 +173,13 @@ class Separation_Song:
                 if need_test_file[0] in file:
                     time.sleep(4)
                     return  need_test_file
-                
+
+    def close_window(self,hwnd,extra):
+        if win32gui.IsWindowVisible(hwnd):
+
+            if 'Ultimate Vocal Remover' in win32gui.GetWindowText(hwnd):
+                win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+
     def check_file_exist(self,temp_folder, idx):
         need_rename = self.wait_finish_inference(idx)
         for file in os.listdir(temp_folder):
@@ -197,6 +205,7 @@ class Separation_Song:
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
+        win32gui.EnumWindows(self.close_window, None)
         if send_config.UVR_PID:
             loguru.logger.info(f"推理完毕,正在结束uvr5进程 {send_config.UVR_PID}")
             system(f'taskkill /F /PID {send_config.UVR_PID}')
