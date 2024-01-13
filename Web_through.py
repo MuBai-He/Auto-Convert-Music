@@ -20,7 +20,7 @@ def get_status():
         'converted_file': file_list
     })
 
-@app.route('/append_song/<song_name>', methods=['POST'])
+@app.route('/append_song/<song_name>', methods=['GET'])
 def convert_task(song_name):
     music_moudle.add_conversion_task(music_name=str(song_name),vocal="刻晴[中]")
     return music_moudle.converting
