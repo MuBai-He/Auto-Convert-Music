@@ -36,4 +36,4 @@ def get_audio(song_name):
         abort(404, description="Audio file not found")
 
 if __name__ == '__main__':
-    app.run(debug=True,port=1717)
+    app.run(port=1717)
