@@ -28,7 +28,7 @@ class convert_music():
     def add_conversion_task(self, music_name, vocal):
         name, file_path = self.download_music(music_name)
         self.converting.append(name)
-        if len(self.converting)==0:
+        if len(self.converting)==1:
 
             thread = threading.Thread(target=self.convert_music, kwargs={'name': name, 'vocal': vocal, 'file_path': file_path})
             thread.start()
