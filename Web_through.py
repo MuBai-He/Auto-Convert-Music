@@ -23,7 +23,7 @@ def get_status():
 @app.route('/append_song/<song_name>', methods=['GET'])
 def convert_task(song_name):
     status,song_name=music_moudle.add_conversion_task(music_name=str(song_name),vocal="刻晴[中]")
-    return status,song_name
+    return jsonify({"status": status, "songName": song_name})
 
 @app.route('/get_audio/<song_name>', methods=['GET'])
 def get_audio(song_name):
@@ -36,4 +36,4 @@ def get_audio(song_name):
         abort(404, description="Audio file not found")
 
 if __name__ == '__main__':
-    app.run(port=1717)
+    app.run(host="0.0.0.0", port=1717)
