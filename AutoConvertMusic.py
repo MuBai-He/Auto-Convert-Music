@@ -71,19 +71,22 @@ class convert_music():
 
         vocal_path=fr"output/{song_name}/Vocals_{vocal}.wav"
 
-        time.sleep(1)
-        with AudioFile(vocal_path) as f:
-            # Open an audio file to write to:
-            with AudioFile(fr'output/{song_name}/Vocals_processed.wav', 'w', f.samplerate, f.num_channels) as o:
-                # Read one second of audio at a time, until the file is empty:
-                while f.tell() < f.frames:
-                    chunk = f.read(f.samplerate)
 
-                    # Run the audio through our pedalboard:
-                    effected = board(chunk, f.samplerate, reset=False)
+        for i in range(10):
+            if os.path.exists(vocal_path):
+                with AudioFile(vocal_path) as f:
+                    # Open an audio file to write to:
+                    with AudioFile(fr'output/{song_name}/Vocals_processed.wav', 'w', f.samplerate, f.num_channels) as o:
+                        # Read one second of audio at a time, until the file is empty:
+                        while f.tell() < f.frames:
+                            chunk = f.read(f.samplerate)
 
-                    # Write the output to our output file:
-                    o.write(effected)
+                            # Run the audio through our pedalboard:
+                            effected = board(chunk, f.samplerate, reset=False)
+
+                            # Write the output to our output file:
+                            o.write(effected)
+                break
 
     def convert_vocals(self,song_name, vocal):
         infer_vocals_end = f'./output/{song_name}/Vocals.wav'
