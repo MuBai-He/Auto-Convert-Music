@@ -105,11 +105,11 @@ class SendUvr5Config:
         uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
         process = subprocess.Popen(uvr5, shell=True)
         self.UVR_PID = process.pid
-        for _ in range(2):
-            sleep(6)
+        while True:
             if self.check_port_open():
                 self.send_ui_min()
                 break
+            sleep(1)
 
 send_config = SendUvr5Config()
 
@@ -166,7 +166,6 @@ class Separation_Song:
     def wait_finish_inference(self,idx):
         model_name = str(self.get_model_name(idx)).lower()
         need_test_file = ["No","Echo"] if "echo" in model_name else ["Vocals", "Instrumental"]
-        print(need_test_file)
         while True:
             file_list = os.listdir(self.temp_folder)
             for file in file_list:
@@ -206,10 +205,6 @@ class Separation_Song:
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
         win32gui.EnumWindows(self.close_window, None)
-        if send_config.UVR_PID:
-            loguru.logger.info(f"推理完毕,正在结束uvr5进程 {send_config.UVR_PID}")
-            system(f'taskkill /F /PID {send_config.UVR_PID}')
-            loguru.logger.success(f"uvr5进程结束 {send_config.UVR_PID}")
 
 if __name__ == "__main__":
     '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
