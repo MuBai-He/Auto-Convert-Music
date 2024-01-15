@@ -41,3 +41,4 @@ tqdm==4.63.0
 wget==3.2
 screeninfo
 flask
+samplerate
