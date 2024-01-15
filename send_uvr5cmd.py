@@ -179,16 +179,22 @@ class Separation_Song:
             if 'Ultimate Vocal Remover' in win32gui.GetWindowText(hwnd):
                 win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
 
-    def check_file_exist(self,temp_folder, idx):
-        need_rename = self.wait_finish_inference(idx)
+    def rename_file(self, need_rename, temp_folder, idx):
         for file in os.listdir(temp_folder):
             if need_rename[0] in file:
-                os.rename(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-v.wav"))
+                os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-v.wav"))
                 self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")
-                time.sleep(1)
+
             elif need_rename[1] in file:
-                os.rename(os.path.join(temp_folder,file), os.path.join(temp_folder, f"{idx}-i.wav"))
-                time.sleep(1)
+                os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-i.wav"))
+
+    def check_file_exist(self, temp_folder, idx):
+        need_rename = self.wait_finish_inference(idx)
+        while True:
+            self.rename_file(need_rename, temp_folder, idx)
+            if os.path.exists(os.path.join(temp_folder, f"{idx}-v.wav")) and os.path.exists(os.path.join(temp_folder, f"{idx}-i.wav")):
+                break
+            time.sleep(1)
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
@@ -196,11 +202,11 @@ class Separation_Song:
             single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.success(f"第{idx}个模型分离完成")
-        time.sleep(1)
+
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
-        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))  
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Echo.wav"))    
+        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))    # 和声
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.output_folder, "Echo.wav"))       # 混响
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
