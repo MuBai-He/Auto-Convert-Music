@@ -22,8 +22,8 @@ def get_status():
 
 @app.route('/append_song/<song_name>', methods=['GET'])
 def convert_task(song_name):
-    music_moudle.add_conversion_task(music_name=str(song_name),vocal="刻晴[中]")
-    return music_moudle.converting
+    status=music_moudle.add_conversion_task(music_name=str(song_name),vocal="刻晴[中]")
+    return status
 
 @app.route('/get_audio/<song_name>', methods=['GET'])
 def get_audio(song_name):
