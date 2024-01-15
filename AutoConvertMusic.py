@@ -71,7 +71,7 @@ class convert_music():
 
         vocal_path=fr"output/{song_name}/Vocals_{vocal}.wav"
 
-
+        time.sleep(1)
         with AudioFile(vocal_path) as f:
             # Open an audio file to write to:
             with AudioFile(fr'output/{song_name}/Vocals_processed.wav', 'w', f.samplerate, f.num_channels) as o:
