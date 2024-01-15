@@ -29,16 +29,16 @@ class convert_music():
         file_list = os.listdir("output\\")
         if song_name in file_list:
             self.converted.append(song_name)
-            return "processed"
+            return "processed",song_name
         else:
             if len(self.converting)==0:
                 self.converting.append(song_name)
                 thread = threading.Thread(target=self.convert_music, kwargs={'name':song_name,'id': id, 'vocal': vocal})
                 thread.start()
-                return "processing"
+                return "processing",song_name
             else:
                 self.waiting_queue.put((music_name, vocal))
-                return "waiting"
+                return "waiting",song_name
 
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
