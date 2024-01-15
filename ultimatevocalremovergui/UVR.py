@@ -7460,11 +7460,11 @@ if __name__ == "__main__":
         if OPERATING_SYSTEM == 'Windows':
             print(e)
 
-    webserver = StoppableWSGIRefServer(host='localhost', port=8015) # !!
-    webserver.start()   # 启动！！
-
     root = MainWindow()
     root.update_checkbox_text()
+
+    webserver = StoppableWSGIRefServer(host='localhost', port=8015) # !!
+    webserver.start()   # 启动！！
 
     reset_timer(5*60)   # 5分钟后自动关闭
 
