@@ -20,32 +20,38 @@ class convert_music():
         self.converted=[]
         self.net_music = netease.Netease_music()
         self.waiting_queue = queue.Queue()
-        self.generate=False
 
     def log_in_neteast(self):
         self.net_music.log_in()
 
     def add_conversion_task(self, music_name, vocal):
-        name, file_path = self.download_music(music_name)
-        print(self.converting)
-        if len(self.converting)==0:
-            self.converting.append(name)
-            thread = threading.Thread(target=self.convert_music, kwargs={'name': name, 'vocal': vocal, 'file_path': file_path})
-            thread.start()
+        id,song_name=self.music_info(song_name=music_name)
+        file_list = os.listdir("output\\")
+        if song_name in file_list:
+            self.converted.append(song_name)
         else:
-            self.waiting_queue.put((music_name, vocal))
+            if len(self.converting)==0:
+                self.converting.append(song_name)
+                thread = threading.Thread(target=self.convert_music, kwargs={'name':song_name,'id': id, 'vocal': vocal})
+                thread.start()
+            else:
+                self.waiting_queue.put((music_name, vocal))
 
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
             music_name, vocal = self.waiting_queue.get()
             self.add_conversion_task(music_name, vocal)
 
-    def download_music(self,music_name):
-        name, file_path = self.net_music.search_download_music(music_name)
+    def download_music(self,id):
+        name,file_path = self.net_music.download_music(id)
         return name,file_path
 
+    def music_info(self,song_name):
+        id,name=self.net_music.search_music(song_name)
+        return id,name
 
-    def convert_music(self, name, vocal, file_path):
+    def convert_music(self,name, id, vocal):
+        D_name,file_path = self.download_music(id=id)
         self.sep_song(song_name=name,file_path=file_path)
         self.convert_vocals(song_name=name,vocal=vocal)
         self.vocal_processing(song_name=name,vocal=vocal)
