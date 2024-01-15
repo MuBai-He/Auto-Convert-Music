@@ -39,3 +39,5 @@ soundfile==0.12.1
 torchcrepe==0.0.22
 tqdm==4.63.0
 wget==3.2
+screeninfo
+flask
