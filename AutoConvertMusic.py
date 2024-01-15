@@ -96,7 +96,7 @@ class convert_music():
                             # Write the output to our output file:
                             o.write(effected)
                 break
-            time.sleep(1)
+            time.sleep(0.5)
 
     def convert_vocals(self,song_name, vocal):
         infer_vocals_end = f'./output/{song_name}/Vocals.wav'
