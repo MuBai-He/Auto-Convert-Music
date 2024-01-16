@@ -2,6 +2,7 @@
 import queue
 import threading
 import time
+import traceback
 
 from send_uvr5cmd import *
 import netease
@@ -58,14 +59,25 @@ class convert_music():
         return id,name
 
     def convert_music(self,name, id, vocal):
-        D_name,file_path = self.download_music(id=id)
-        self.sep_song(song_name=name,file_path=file_path)
-        self.convert_vocals(song_name=name,vocal=vocal)
-        self.vocal_processing(song_name=name,vocal=vocal)
-        self.mix_music(name,vocal)
-        self.converting.remove(name)
-        self.check_waiting_queue()
-        self.converted.append(name)
+        try:
+            D_name,file_path = self.download_music(id=id)
+            self.sep_song(song_name=name,file_path=file_path)
+            self.convert_vocals(song_name=name,vocal=vocal)
+            self.vocal_processing(song_name=name,vocal=vocal)
+            self.mix_music(name,vocal)
+            self.converting.remove(name)
+            self.check_waiting_queue()
+            self.converted.append(name)
+        except Exception as e:
+            win32gui.EnumWindows(self.close_window, None)
+            print("寄：",e)
+            traceback.print_exc()
+    def close_window(self,hwnd,extra):
+        if win32gui.IsWindowVisible(hwnd):
+
+            if 'Ultimate Vocal Remover' in win32gui.GetWindowText(hwnd):
+                win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+
 
     def mix_music(self,song_name,vocal):
         Vocal = AudioSegment.from_wav(rf'output/{song_name}/Vocals_processed.wav')
