@@ -16,7 +16,7 @@ def get_music_info(song_name):
 @app.route('/status', methods=['GET'])
 def get_status():
     vocal1 = vocal.replace("[中]", "[[]中[]]")
-    file_list = glob.glob(f"output/*/*[!Vocals]_{vocal1}.wav")
+    file_list = glob.glob(f"output/*/*[!Vocals]*_{vocal1}.wav")
     file_name = []
     for f in file_list:
         filename = os.path.basename(f)

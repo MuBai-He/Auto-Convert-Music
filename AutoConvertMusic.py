@@ -1,5 +1,6 @@
 #coding=UTF-8
 import queue
+import re
 import threading
 import time
 import traceback
@@ -25,12 +26,10 @@ class convert_music():
     def log_in_neteast(self):
         self.net_music.log_in()
     
-    def music_info(self, music_name):
-        id,song_name=self.music_info(song_name=music_name)
-        return id,song_name
 
     def add_conversion_task(self, music_name, vocal):
         id,song_name=self.music_info(song_name=music_name)
+        song_name = re.sub(r'[<>:"/\\|?*]', '', song_name).rstrip('. ')
         file_list = os.listdir("output\\")
         if song_name in file_list:
             self.converted.append(song_name)
