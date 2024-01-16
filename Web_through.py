@@ -38,11 +38,13 @@ def convert_task(song_name):
 def get_audio(song_name):
 
     search_pattern = os.path.join(f"output\\{song_name}\\" + song_name + '*.wav')
-    matching_files = glob.glob(search_pattern)[0]
-    try:
-        return send_file(matching_files, as_attachment=False)
-    except:
-        abort(404, description="Audio file not found")
+    list = glob.glob(search_pattern)
+    if len(list)>0:
+        matching_files = list[0]
+        try:
+            return send_file(matching_files, as_attachment=False)
+        except:
+            abort(404, description="Audio file not found")
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=1717)
