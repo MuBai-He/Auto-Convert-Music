@@ -28,10 +28,10 @@ class convert_music():
     
 
     def add_conversion_task(self, music_name, vocal):
+        #获取网易歌库歌曲名称
         id,song_name=self.music_info(song_name=music_name)
-        song_name = re.sub(r'[<>:"/\\|?*]', '', song_name).rstrip('. ')
-        file_list = os.listdir("output\\")
-        if song_name in file_list:
+        #判断歌曲是否生成
+        if os.path.exists("output/{song_name}}/{song_name}_刻晴[中].wav")==True:
             self.converted.append(song_name)
             return "processed",song_name
         else:
@@ -55,6 +55,8 @@ class convert_music():
 
     def music_info(self,song_name):
         id,name=self.net_music.search_music(song_name)
+        #歌曲名称过滤
+        name = re.sub(r'[<>:"/\\|?*]', '', name).rstrip('. ')
         return id,name
 
     def convert_music(self,name, id, vocal):
