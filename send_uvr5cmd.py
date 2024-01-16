@@ -180,13 +180,16 @@ class Separation_Song:
                 win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
 
     def rename_file(self, need_rename, temp_folder, idx):
-        for file in os.listdir(temp_folder):
-            if need_rename[0] in file:
-                os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-v.wav"))
-                self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")
+        try:
+            for file in os.listdir(temp_folder):
+                if need_rename[0] in file:
+                    os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-v.wav"))
+                    self.input_file_path = os.path.join(temp_folder, f"{idx}-v.wav")
 
-            elif need_rename[1] in file:
-                os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-i.wav"))
+                elif need_rename[1] in file:
+                    os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-i.wav"))
+        except Exception as e:
+            loguru.logger.error(f"重命名文件失败,错误信息为:{e}")
 
     def check_file_exist(self, temp_folder, idx):
         need_rename = self.wait_finish_inference(idx)
@@ -194,7 +197,7 @@ class Separation_Song:
             self.rename_file(need_rename, temp_folder, idx)
             if os.path.exists(os.path.join(temp_folder, f"{idx}-v.wav")) and os.path.exists(os.path.join(temp_folder, f"{idx}-i.wav")):
                 break
-            time.sleep(1)
+            time.sleep(2)
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
