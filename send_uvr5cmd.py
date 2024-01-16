@@ -165,13 +165,14 @@ class Separation_Song:
         
     def wait_finish_inference(self,idx):
         model_name = str(self.get_model_name(idx)).lower()
-        need_test_file = ["No","Echo"] if "echo" in model_name else ["Vocals", "Instrumental"]
+        need_test_file = ["(No Echo)","(Echo)"] if "echo" in model_name else ["(Vocals)", "(Instrumental)"]
         while True:
             file_list = os.listdir(self.temp_folder)
             for file in file_list:
                 if need_test_file[0] in file:
-                    time.sleep(4)
-                    return  need_test_file
+                    for file in file_list:
+                        if need_test_file[1] in file:
+                            return need_test_file
 
     def close_window(self,hwnd,extra):
         if win32gui.IsWindowVisible(hwnd):
