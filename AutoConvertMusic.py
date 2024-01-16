@@ -26,9 +26,6 @@ class convert_music():
     def log_in_neteast(self):
         self.net_music.log_in()
     
-    def music_info(self, music_name):
-        id,song_name=self.music_info(song_name=music_name)
-        return id,song_name
 
     def add_conversion_task(self, music_name, vocal):
         id,song_name=self.music_info(song_name=music_name)
