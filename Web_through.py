@@ -5,19 +5,28 @@ from flask import Flask, jsonify, send_file,abort
 from AutoConvertMusic import *
 
 music_moudle = convert_music()
-file_list=os.listdir("output\\")
-
 app = Flask(__name__)
+vocal = "刻晴[中]"
+
+@app.route('/musicInfo/<song_name>', methods=['GET'])
+def get_music_info(song_name):
+    id,song_name=music_moudle.music_info(song_name)
+    return jsonify({"id": id, "songName": song_name})
 
 @app.route('/status', methods=['GET'])
 def get_status():
-    file_list = os.listdir("output\\")
+    vocal1 = vocal.replace("[中]", "[[]中[]]")
+    file_list = glob.glob(f"output/*/*[!Vocals]_{vocal1}.wav")
+    file_name = []
+    for f in file_list:
+        filename = os.path.basename(f)
+        file_name.append(filename.replace(f"_{vocal}.wav", ""))
 
     # 返回converting和converted的状态
     return jsonify({
         'converting': music_moudle.converting,
         'converted': music_moudle.converted,
-        'converted_file': file_list
+        'converted_file': file_name
     })
 
 @app.route('/append_song/<song_name>', methods=['GET'])
