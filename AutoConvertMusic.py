@@ -31,7 +31,7 @@ class convert_music():
         #获取网易歌库歌曲名称
         id,song_name=self.music_info(song_name=music_name)
         #判断歌曲是否生成
-        if os.path.exists("output/{song_name}}/{song_name}_刻晴[中].wav")==True:
+        if os.path.exists(f"output/{song_name}/{song_name}_刻晴[中].wav")==True:
             self.converted.append(song_name)
             return "processed",song_name
         else:
