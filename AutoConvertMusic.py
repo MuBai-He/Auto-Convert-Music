@@ -56,7 +56,7 @@ class convert_music():
     def music_info(self,song_name):
         id,name=self.net_music.search_music(song_name)
         #歌曲名称过滤
-        name = re.sub(r'[<>:"/\\|?*]', '', name).rstrip('. ')
+        name = re.sub(r'[\[\]<>:"/\\|?*]', '', name).rstrip('. ')
         return id,name
 
     def convert_music(self,name, id, vocal):

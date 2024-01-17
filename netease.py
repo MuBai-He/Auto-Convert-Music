@@ -1,5 +1,6 @@
 #coding=UTF-8
 import os
+import re
 import requests
 import json
 
@@ -52,6 +53,7 @@ class Netease_music():
         song=self.netease.get(song_url)
         name=self.netease.get(self.address+f"/song/detail?ids={id}").text
         name=json.loads(name)['songs'][0]['name']
+        name = re.sub(r'[\[\]<>:"/\\|?*.]', '', name).rstrip('. ')  #特殊字符处理
         suffix = song_url.split(".")[-1]
         file_name='input\\' + name + '.' + suffix
         with open( file_name, 'wb') as f:

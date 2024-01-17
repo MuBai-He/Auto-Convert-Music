@@ -36,18 +36,7 @@ def convert_task(song_name):
 
 @app.route('/get_audio/<song_name>', methods=['GET'])
 def get_audio(song_name):
-    real_songname=""
-    #特殊字符转移
-    for c in song_name:
-        if c == '[':
-            c = '[[]'
-        elif c == ']':
-            c = '[]]'
-        else:
-            c = c
-        real_songname = real_songname + c
-    
-    search_pattern = os.path.join(f"output/{real_songname}/{real_songname}*.wav")
+    search_pattern = os.path.join(f"output/{song_name}/{song_name}*.wav")
     list = glob.glob(search_pattern)
     if len(list)>0:
         matching_files = list[0]
