@@ -26,6 +26,7 @@ def get_status():
     return jsonify({
         'converting': music_moudle.converting,
         'converted': music_moudle.converted,
+        'convertfail': music_moudle.convertfail,
         'converted_file': file_name
     })
 
