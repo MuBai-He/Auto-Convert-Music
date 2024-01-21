@@ -99,13 +99,15 @@ class convert_music():
             self.vocal_processing(song_name=name,vocal=vocal)
             self.my_logging.info(f'4.分离混响De-Echo-Normal完成:{name}')
             self.mix_music(name,vocal)
+            self.my_logging.info(f'5.组合背景乐、和声完成:{name}')
             self.converting.remove(name)
             self.check_waiting_queue()
             self.converted.append(name)
             if name in self.convertfail:
                 self.convertfail.remove(name)
+            self.my_logging.info(f'歌曲完成转换:{name}')
         except Exception as e:
-            #win32gui.EnumWindows(self.close_window, None)
+            win32gui.EnumWindows(self.close_window, None)
             traceback.print_exc()
             error=traceback.format_exc()
             self.my_logging.error(f'convert_music错误:{error}')
