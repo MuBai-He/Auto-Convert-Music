@@ -13,8 +13,38 @@ import shutil
 import time
 import json
 import loguru
+import logging
+import psutil
+
+# 控制台日志
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# 日志配置
+root_dir=os.path.dirname(os.path.abspath(__file__))
+log_dir=os.path.join(root_dir,"logs")
+if not os.path.exists(log_dir):
+   os.mkdir(log_dir)
+
+my_logging = logging.getLogger(__name__)#创建日志收集器
+my_logging.setLevel('DEBUG')#设置日志收集级别
+ch = logging.StreamHandler()#输出到控制台
+my_logging.setLevel('INFO')#设置日志输出级别
+my_logging.addHandler(ch)#对接，添加渠道
+
+#创建文件处理器fh，log_file为日志存放的文件夹
+log_file=os.path.join(log_dir,"{}_log.txt".format(time.strftime("%Y-%m-%d",time.localtime())))
+fh = logging.FileHandler(log_file,encoding="UTF-8")
+fh.setLevel('INFO')#设置日志输出级别
+my_logging.addHandler(fh)#对接，添加渠道
+
+#指定输出的格式
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(filename)s %(name)s 日志信息:%(message)s')
+#规定日志输出的时候按照formatter格式来打印
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
 
 class SendUvr5Config:
+    
     def __init__(self, audio_format = 'WAV', device = True, select_stem = 'all', ui_min = True):
         self.ip_port = '127.0.0.1:8015'
         self.site = f'http://{self.ip_port}'
@@ -100,6 +130,9 @@ class SendUvr5Config:
     # 检测uvr5是否启动
     def check_start_uvr5(self):
         if self.check_port_open():
+            logstr = f"首次：端口[{self.ip_port}]被占用，进程[{self.UVR_PID}]"
+            print(logstr)
+            my_logging.info(logstr)
             self.send_ui_min()
             return
         uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
@@ -107,6 +140,9 @@ class SendUvr5Config:
         self.UVR_PID = process.pid
         while True:
             if self.check_port_open():
+                logstr = f"循环：监测到已经启动端口[{self.ip_port}]，进程[{self.UVR_PID}]"
+                print(logstr)
+                my_logging.info(logstr)
                 self.send_ui_min()
                 break
             sleep(1)
@@ -118,6 +154,9 @@ def single_model_separation(input_file_path, output_folder, task_mode, config_na
     while True:
         test_busy = send_config.send_input_file((input_file_path,))
         if "tootoobusy" not in test_busy:
+            logstr=f"tootoobusy:{input_file_path}"
+            print(f"tootoobusy:{input_file_path}")
+            my_logging.info(logstr)
             break
         time.sleep(1)
 
@@ -199,6 +238,16 @@ class Separation_Song:
             if os.path.exists(os.path.join(temp_folder, f"{idx}-v.wav")) and os.path.exists(os.path.join(temp_folder, f"{idx}-i.wav")):
                 break
             time.sleep(2)
+    
+    # 根据端口号杀进程id
+    def kill_by_port(self,port):
+        for conn in psutil.net_connections():
+            if conn.laddr.port == port and conn.pid>0:
+                logstr=f"最终结束-{self.input_file_path}：127.0.0.1:{port}杀进程{conn.pid}"
+                print(logstr)
+                my_logging.info(logstr)
+                p = psutil.Process(conn.pid)
+                p.terminate()
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
@@ -214,7 +263,10 @@ class Separation_Song:
 
         time.sleep(1)
         shutil.rmtree(self.temp_folder)     # 删除临时文件夹
+        # 关闭UVR窗口
         win32gui.EnumWindows(self.close_window, None)
+        # 杀UVR web进程
+        self.kill_by_port(8015)
 
 if __name__ == "__main__":
     '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
