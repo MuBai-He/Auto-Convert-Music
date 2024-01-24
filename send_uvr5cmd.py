@@ -13,38 +13,12 @@ import shutil
 import time
 import json
 import loguru
-import logging
 import psutil
+from logs import LogsBase
 
-# 控制台日志
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# 日志配置
-root_dir=os.path.dirname(os.path.abspath(__file__))
-log_dir=os.path.join(root_dir,"logs")
-if not os.path.exists(log_dir):
-   os.mkdir(log_dir)
-
-my_logging = logging.getLogger(__name__)#创建日志收集器
-my_logging.setLevel('DEBUG')#设置日志收集级别
-ch = logging.StreamHandler()#输出到控制台
-my_logging.setLevel('INFO')#设置日志输出级别
-my_logging.addHandler(ch)#对接，添加渠道
-
-#创建文件处理器fh，log_file为日志存放的文件夹
-log_file=os.path.join(log_dir,"{}_log.txt".format(time.strftime("%Y-%m-%d",time.localtime())))
-fh = logging.FileHandler(log_file,encoding="UTF-8")
-fh.setLevel('INFO')#设置日志输出级别
-my_logging.addHandler(fh)#对接，添加渠道
-
-#指定输出的格式
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(filename)s %(name)s 日志信息:%(message)s')
-#规定日志输出的时候按照formatter格式来打印
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
+my_logging=LogsBase(__name__)
 
 class SendUvr5Config:
-    
     def __init__(self, audio_format = 'WAV', device = True, select_stem = 'all', ui_min = True):
         self.ip_port = '127.0.0.1:8015'
         self.site = f'http://{self.ip_port}'
@@ -154,8 +128,8 @@ def single_model_separation(input_file_path, output_folder, task_mode, config_na
     while True:
         test_busy = send_config.send_input_file((input_file_path,))
         if "tootoobusy" not in test_busy:
-            logstr=f"tootoobusy:{input_file_path}"
-            print(f"tootoobusy:{input_file_path}")
+            logstr=f"tootoobusy:{output_folder}"
+            print(f"tootoobusy:{output_folder}")
             my_logging.info(logstr)
             break
         time.sleep(1)
@@ -243,7 +217,7 @@ class Separation_Song:
     def kill_by_port(self,port):
         for conn in psutil.net_connections():
             if conn.laddr.port == port and conn.pid>0:
-                logstr=f"最终结束-{self.input_file_path}：127.0.0.1:{port}杀进程{conn.pid}"
+                logstr=f"最终结束-{self.output_folder}：远程{conn.raddr}=>本地{conn.laddr}杀进程[{conn.pid}][{conn.status}]"
                 print(logstr)
                 my_logging.info(logstr)
                 p = psutil.Process(conn.pid)

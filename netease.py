@@ -55,7 +55,10 @@ class Netease_music():
         name=json.loads(name)['songs'][0]['name']
         name = re.sub(r'[\[\]<>:"/\\|?*.]', '', name).rstrip('. ')  #特殊字符处理
         suffix = song_url.split(".")[-1]
-        file_name='input\\' + name + '.' + suffix
+        if suffix!="":
+            file_name='input\\' + name + '.' + suffix
+        else:
+            file_name='input\\' + name + '.mp3'
         with open( file_name, 'wb') as f:
             f.write(song.content)
         return name,file_name
