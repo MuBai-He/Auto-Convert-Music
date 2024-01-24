@@ -1,0 +1,122 @@
+2024-01-24 12:39:27,908 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:39:28,519 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:天天
+2024-01-24 12:40:23,230 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:40:23,604 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:天天
+2024-01-24 12:43:18,925 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:44:48,067 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:45:09,843 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:天天
+2024-01-24 12:46:02,772 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[9044]
+2024-01-24 12:46:02,789 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\input\天天
+2024-01-24 12:47:07,766 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:47:09,335 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:天天
+2024-01-24 12:47:16,898 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[20580]
+2024-01-24 12:47:16,911 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\input\天天.mp3
+2024-01-24 12:47:37,747 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20580]
+2024-01-24 12:47:37,755 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\天天\temp\0-v.wav
+2024-01-24 12:47:44,191 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20580]
+2024-01-24 12:47:44,211 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\天天\temp\1-v.wav
+2024-01-24 12:47:49,879 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\天天\temp\2-v.wav：127.0.0.1:8015杀进程22532
+2024-01-24 12:47:49,882 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:天天
+2024-01-24 12:48:04,125 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:天天
+2024-01-24 12:48:04,141 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:天天
+2024-01-24 12:48:04,189 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:天天
+2024-01-24 12:48:04,190 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:天天
+2024-01-24 12:58:58,565 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:天天
+2024-01-24 12:59:01,152 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:天天
+2024-01-24 12:59:10,148 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[22904]
+2024-01-24 12:59:10,159 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\天天\temp
+2024-01-24 12:59:26,256 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[22904]
+2024-01-24 12:59:26,272 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\天天\temp
+2024-01-24 12:59:33,468 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[22904]
+2024-01-24 12:59:33,474 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\天天\temp
+2024-01-24 12:59:40,521 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\天天：addr(ip='127.0.0.1', port=8015)=>():8015杀进程[19492][LISTEN]
+2024-01-24 12:59:40,523 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:天天
+2024-01-24 12:59:52,684 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:天天
+2024-01-24 12:59:52,704 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:天天
+2024-01-24 12:59:52,752 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:天天
+2024-01-24 12:59:52,753 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:天天
+2024-01-24 13:00:43,480 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:解决
+2024-01-24 13:00:45,428 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:解决
+2024-01-24 13:00:50,752 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[17680]
+2024-01-24 13:00:50,776 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\解决\temp
+2024-01-24 13:02:26,864 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[17680]
+2024-01-24 13:02:26,872 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\解决\temp
+2024-01-24 13:02:55,435 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[17680]
+2024-01-24 13:02:55,453 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\解决\temp
+2024-01-24 13:03:25,565 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\解决：addr(ip='127.0.0.1', port=8015)=>():8015杀进程[2788][LISTEN]
+2024-01-24 13:03:25,566 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:解决
+2024-01-24 13:03:51,512 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:解决
+2024-01-24 13:03:51,711 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:解决
+2024-01-24 13:03:52,090 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:解决
+2024-01-24 13:03:52,091 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:解决
+2024-01-24 13:06:15,507 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:爸爸
+2024-01-24 13:06:16,054 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:爸爸
+2024-01-24 13:06:22,379 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[22860]
+2024-01-24 13:06:22,393 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\爸爸\temp
+2024-01-24 13:06:38,405 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[22860]
+2024-01-24 13:06:38,421 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\爸爸\temp
+2024-01-24 13:06:45,096 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[22860]
+2024-01-24 13:06:45,111 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\爸爸\temp
+2024-01-24 13:06:52,414 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\爸爸：远程()=>本地addr(ip='127.0.0.1', port=8015)杀进程[7532][LISTEN]
+2024-01-24 13:06:52,414 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:爸爸
+2024-01-24 13:07:07,064 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:爸爸
+2024-01-24 13:07:07,096 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:爸爸
+2024-01-24 13:07:07,174 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:爸爸
+2024-01-24 13:07:07,174 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:爸爸
+2024-01-24 13:33:36,483 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:反复
+2024-01-24 13:33:37,235 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:反复
+2024-01-24 13:33:44,736 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[13348]
+2024-01-24 13:33:44,761 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\反复\temp
+2024-01-24 13:35:34,289 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[13348]
+2024-01-24 13:35:34,297 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\反复\temp
+2024-01-24 13:36:07,726 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[13348]
+2024-01-24 13:36:07,734 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\反复\temp
+2024-01-24 13:36:37,708 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\反复：远程()=>本地addr(ip='127.0.0.1', port=8015)杀进程[23140][LISTEN]
+2024-01-24 13:36:37,709 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:反复
+2024-01-24 13:37:05,254 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:反复
+2024-01-24 13:37:05,441 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:反复
+2024-01-24 13:37:05,832 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:反复
+2024-01-24 13:37:05,833 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:反复
+2024-01-24 13:44:10,542 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:必备
+2024-01-24 13:44:11,803 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:必备
+2024-01-24 13:45:14,023 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[20424]
+2024-01-24 13:45:31,576 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\必备\temp
+2024-01-24 13:46:21,505 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20424]
+2024-01-24 13:46:25,087 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\必备\temp
+2024-01-24 13:48:36,223 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20424]
+2024-01-24 13:48:36,232 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\必备\temp
+2024-01-24 13:48:47,945 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\必备：远程()=>本地addr(ip='127.0.0.1', port=8015)杀进程[21872][LISTEN]
+2024-01-24 13:48:47,946 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:必备
+2024-01-24 13:48:57,247 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:必备
+2024-01-24 13:48:57,390 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:必备
+2024-01-24 13:48:57,511 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:必备
+2024-01-24 13:48:57,511 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:必备
+2024-01-24 13:51:16,524 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:谷歌
+2024-01-24 13:51:17,049 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:谷歌
+2024-01-24 13:51:23,592 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[17332]
+2024-01-24 13:51:23,613 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\谷歌\temp
+2024-01-24 13:51:35,017 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[17332]
+2024-01-24 13:51:35,022 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\谷歌\temp
+2024-01-24 13:51:40,368 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[17332]
+2024-01-24 13:51:40,368 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\谷歌\temp
+2024-01-24 13:53:27,147 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:谷歌
+2024-01-24 13:53:36,068 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:谷歌
+2024-01-24 13:53:36,097 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:谷歌
+2024-01-24 13:53:36,122 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:谷歌
+2024-01-24 13:53:36,122 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:谷歌
+2024-01-24 14:16:44,027 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:凛冬将至（Full version）
+2024-01-24 14:16:45,010 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:凛冬将至（Full version）
+2024-01-24 14:29:49,874 INFO logs.py AutoConvertMusic 日志信息:开始转换歌曲:凛冬将至（Full version）
+2024-01-24 14:29:50,714 INFO logs.py AutoConvertMusic 日志信息:1.下载歌曲完成:凛冬将至（Full version）
+2024-01-24 14:32:33,737 INFO logs.py send_uvr5cmd 日志信息:循环：监测到已经启动端口[127.0.0.1:8015]，进程[20380]
+2024-01-24 14:32:34,694 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\凛冬将至（Full version）\temp
+2024-01-24 14:36:21,084 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20380]
+2024-01-24 14:36:21,100 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\凛冬将至（Full version）\temp
+2024-01-24 14:37:13,038 INFO logs.py send_uvr5cmd 日志信息:首次：端口[127.0.0.1:8015]被占用，进程[20380]
+2024-01-24 14:37:13,053 INFO logs.py send_uvr5cmd 日志信息:tootoobusy:J:\ai\ai-code\Auto-Convert-Music\output\凛冬将至（Full version）\temp
+2024-01-24 14:37:43,868 INFO logs.py send_uvr5cmd 日志信息:最终结束-J:\ai\ai-code\Auto-Convert-Music\output\凛冬将至（Full version）：远程()=>本地addr(ip='127.0.0.1', port=8015)杀进程[14852][LISTEN]
+2024-01-24 14:37:43,869 INFO logs.py AutoConvertMusic 日志信息:2.分离人声mdx23c完成:凛冬将至（Full version）
+2024-01-24 14:38:25,725 INFO logs.py AutoConvertMusic 日志信息:3.分离和声6-HP完成:凛冬将至（Full version）
+2024-01-24 14:38:25,933 INFO logs.py AutoConvertMusic 日志信息:4.分离混响De-Echo-Normal完成:凛冬将至（Full version）
+2024-01-24 14:38:26,504 INFO logs.py AutoConvertMusic 日志信息:5.组合背景乐、和声完成:凛冬将至（Full version）
+2024-01-24 14:38:26,505 INFO logs.py AutoConvertMusic 日志信息:歌曲完成转换:凛冬将至（Full version）
