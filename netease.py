@@ -24,9 +24,14 @@ class Netease_music():
         with open('netease.txt','w') as f:
             cookie=json.dumps(self.netease.cookies.get_dict())
             f.write(cookie)
+    
     def search_music(self,song_name):
         info=self.netease.get(self.address+f"/search?keywords={song_name}&limit=1").text
-        info=json.loads(info)['result']['songs'][0]
+        jsonData = json.loads(info)
+        #判断歌曲不存在歌库的情况
+        if not jsonData.get("result"):
+            return 0,""
+        info=jsonData['result']['songs'][0]
         id=info['id']
         name=info['name']
         return id,name
