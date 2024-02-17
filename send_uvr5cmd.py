@@ -26,7 +26,6 @@ class SendUvr5Config:
         self.device = device
         self.select_stem = select_stem
         self.ui_min = ui_min
-        self.UVR_PID = None
 
     # 发送输入的音频文件
     def send_input_file(self,select_input):
@@ -104,19 +103,12 @@ class SendUvr5Config:
     # 检测uvr5是否启动
     def check_start_uvr5(self):
         if self.check_port_open():
-            logstr = f"首次：端口[{self.ip_port}]被占用，进程[{self.UVR_PID}]"
-            print(logstr)
-            my_logging.info(logstr)
             self.send_ui_min()
             return
         uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
         process = subprocess.Popen(uvr5, shell=True)
-        self.UVR_PID = process.pid
         while True:
             if self.check_port_open():
-                logstr = f"循环：监测到已经启动端口[{self.ip_port}]，进程[{self.UVR_PID}]"
-                print(logstr)
-                my_logging.info(logstr)
                 self.send_ui_min()
                 break
             sleep(1)
@@ -165,9 +157,11 @@ class Separation_Song:
 
     def get_model_name(self,idx):
         if self.keys_list[idx].lower()[:2] == 'en':
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultimatevocalremovergui\gui_data\saved_ensembles", self.values_list[idx]+".json")
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                        "ultimatevocalremovergui\gui_data\saved_ensembles", self.values_list[idx]+".json")
         else:
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultimatevocalremovergui\gui_data\saved_settings", self.values_list[idx]+".json")
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                                       "ultimatevocalremovergui\gui_data\saved_settings", self.values_list[idx]+".json")
         with open(config_path, 'r') as f:
             config = json.load(f)
             if self.keys_list[idx].lower()[:2] == 'en':
@@ -203,7 +197,7 @@ class Separation_Song:
                 elif need_rename[1] in file:
                     os.rename(os.path.join(temp_folder, file), os.path.join(temp_folder, f"{idx}-i.wav"))
         except Exception as e:
-            loguru.logger.error(f"重命名文件失败,错误信息为:{e}")
+            loguru.logger.warning(f"重命名文件失败,错误信息为:{e},请等待文件重命名完成...")
 
     def check_file_exist(self, temp_folder, idx):
         need_rename = self.wait_finish_inference(idx)
@@ -236,7 +230,7 @@ class Separation_Song:
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.output_folder, "Echo.wav"))       # 混响
 
         time.sleep(1)
-        shutil.rmtree(self.temp_folder)     # 删除临时文件夹
+        shutil.rmtree(self.temp_folder)
         # 关闭UVR窗口
         win32gui.EnumWindows(self.close_window, None)
         # 杀UVR web进程

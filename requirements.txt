@@ -42,3 +42,5 @@ wget==3.2
 screeninfo
 flask
 samplerate
+yutto
+selenium

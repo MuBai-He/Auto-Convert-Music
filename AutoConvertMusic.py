@@ -7,6 +7,7 @@ import traceback
 
 from send_uvr5cmd import *
 import netease
+import bilibili
 import sys
 from pathlib import Path
 from pydub import AudioSegment
@@ -17,61 +18,68 @@ from logs import LogsBase
 my_logging=LogsBase(__name__)
 
 class convert_music():
-    def __init__(self):
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs("input", exist_ok=True)
+    os.makedirs("output", exist_ok=True)
+    def __init__(self, music_platform : str, svc_config : dict):
         self.default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
         self.converting=[]
         self.converted=[]
         self.convertfail=[]
-        self.net_music = netease.Netease_music()
         self.waiting_queue = queue.Queue()
+        self.music_platform = music_platform
+        self.svc_config = svc_config
+        if self.music_platform == "netease":
+            self.net_music = netease.Netease_music()
+        elif self.music_platform == "bilibili":
+            self.bili_music = bilibili.Bilibili()
+        else:
+            raise ValueError("music_platform must be 'netease' or 'bilibili'")
 
-    def log_in_neteast(self):
-        self.net_music.log_in()
-    
-    def add_conversion_task(self, music_name, vocal):
-        #获取网易歌库歌曲名称
-        id,song_name=self.music_info(song_name=music_name)
-        #判断歌曲是否生成
-        if os.path.exists(f"output/{song_name}/{song_name}_刻晴[中].wav")==True:
+    def add_conversion_task(self, music_info, speaker):
+        # 如果input文件夹中已经存在该歌曲的文件, 则获取song_name 和 music_file_path
+        exist_files = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.ogg|.wav|.mp3", i)]
+        for file in exist_files:
+            if music_info in file:
+                song_name = music_info
+                music_file_path = f"input/{file}"
+            else:
+                if self.music_platform == "netease":
+                    id, song_name = self.net_music.search_music(song_name=music_info)
+                    song_name, music_file_path = self.net_music.download_music(id)
+                elif self.music_platform == "bilibili":
+                    song_name, music_file_path=self.bili_music.download_music(music_info)
+
+        if os.path.exists(f"output/{song_name}/{song_name}_{speaker}.wav")==True:
             self.converted.append(song_name)
             return "processed",song_name
         else:
             if len(self.converting)==0:
                 self.converting.append(song_name)
-                thread = threading.Thread(target=self.convert_music, kwargs={'name':song_name,'id': id, 'vocal': vocal})
+                thread = threading.Thread(target=self.convert_music, kwargs={'name':song_name,'music_file_path': music_file_path, 'speaker': speaker})
                 thread.start()
                 return "processing",song_name
             else:
-                self.waiting_queue.put((music_name, vocal))
+                self.waiting_queue.put((music_info, speaker))
                 return "waiting",song_name
 
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
-            music_name, vocal = self.waiting_queue.get()
-            self.add_conversion_task(music_name, vocal)
+            music_name, speaker = self.waiting_queue.get()
+            self.add_conversion_task(music_name, speaker)
 
-    def download_music(self,id):
-        name,file_path = self.net_music.download_music(id)
-        return name,file_path
-
-    def music_info(self,song_name):
-        id,name=self.net_music.search_music(song_name)
-        #歌曲名称过滤
-        name = re.sub(r'[\[\]<>:"/\\|?*]', '', name).rstrip('. ')
-        return id,name
-
-    def convert_music(self,name, id, vocal):
+    def convert_music(self,name, music_file_path, speaker):
         try:
             my_logging.info(f'开始转换歌曲:{name}')
-            D_name,file_path = self.download_music(id=id)
-            my_logging.info(f'1.下载歌曲完成:{name}')
-            self.sep_song(song_name=name,file_path=file_path)
+            if not os.path.exists(f"output/{name}/Vocals.wav"):
+                self.sep_song(song_name=name,file_path=music_file_path)
             my_logging.info(f'2.调用UVR分离声音：人声mdx23c->和声6-HP->混响De-Echo-Normal 完成:{name}')
-            self.convert_vocals(song_name=name,vocal=vocal)
+            if not os.path.exists(f"output/{name}/Vocals_{speaker}.wav"):
+                self.convert_vocals(song_name=name,vocal=speaker)
             my_logging.info(f'3.调用sovits4.1变声完成:{name}')
-            self.vocal_processing(song_name=name,vocal=vocal)
-            my_logging.info(f'4.压缩器，高通滤波，增益等音效处理完成:{name}')
-            self.mix_music(name,vocal)
+            self.vocal_processing(song_name=name,vocal=speaker)
+            my_logging.info(f'4.音效处理完成:{name}')
+            self.mix_music(name,speaker)
             my_logging.info(f'5.组合背景乐、和声完成:{name}')
             self.converting.remove(name)
             self.check_waiting_queue()
@@ -93,46 +101,39 @@ class convert_music():
             if 'Ultimate Vocal Remover' in win32gui.GetWindowText(hwnd):
                 win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
 
-
-    def mix_music(self,song_name,vocal):
+    def mix_music(self,song_name,speaker):
         Vocal = AudioSegment.from_wav(rf'output/{song_name}/Vocals_processed.wav')
         Background_music = AudioSegment.from_wav(rf'output/{song_name}/Instrumental.wav')
         Chord = AudioSegment.from_wav(rf'output/{song_name}/Chord.wav')
-        Echo = AudioSegment.from_wav(rf'output/{song_name}/Echo.wav')
+        # Echo = AudioSegment.from_wav(rf'output/{song_name}/Echo.wav')
 
-        output = Background_music.overlay(Vocal).overlay(Chord).overlay(Echo)
-        output.export(f"output/{song_name}/{song_name}_{vocal}.wav", format="wav")
+        output = Background_music.overlay(Vocal).overlay(Chord)#.overlay(Echo)
+        output.export(f"output/{song_name}/{song_name}_{speaker}.wav", format="wav")
 
-    def vocal_processing(self,song_name,vocal):
+    def vocal_processing(self,song_name,speaker):
         board = Pedalboard(
             [Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
              HighpassFilter(cutoff_frequency_hz=110),
              Gain(gain_db=3)])
 
-        vocal_path=fr"output/{song_name}/Vocals_{vocal}.wav"
+        vocal_path=fr"output/{song_name}/Vocals_{speaker}.wav"
 
-
-        for i in range(10):
-            if os.path.exists(vocal_path):
-                with AudioFile(vocal_path) as f:
-                    # Open an audio file to write to:
-                    with AudioFile(fr'output/{song_name}/Vocals_processed.wav', 'w', f.samplerate, f.num_channels) as o:
-                        # Read one second of audio at a time, until the file is empty:
-                        while f.tell() < f.frames:
-                            chunk = f.read(f.samplerate)
-
-                            # Run the audio through our pedalboard:
-                            effected = board(chunk, f.samplerate, reset=False)
-
-                            # Write the output to our output file:
-                            o.write(effected)
-                break
+        if os.path.exists(vocal_path):
+            with AudioFile(vocal_path) as f:
+                with AudioFile(fr'output/{song_name}/Vocals_processed.wav', 'w', f.samplerate, f.num_channels) as o:
+                    chunk = f.read(f.frames)
+                    effected = board(chunk, f.samplerate, reset=False)
+                    o.write(effected)
             time.sleep(0.5)
 
-    def convert_vocals(self,song_name, vocal):
-        infer_vocals_end = f'./output/{song_name}/Vocals.wav'
-        convert_vocals = sys.executable + " ./sovits4.1/inference_main.py " + f'-n "{infer_vocals_end}" -s {vocal}'
-        subprocess.run(convert_vocals, shell=True)
+    def convert_vocals(self,song_name, speaker):
+        clean_names = f'./output/{song_name}/Vocals.wav'
+        cmd = sys.executable + f" so-vits-svc/inference_main.py -m {self.svc_config["model_path"]} \
+            -c {self.svc_config["config_path"]} -n {clean_names} -s {speaker} \
+            -cm {self.svc_config["cluster_model_path"]} -cr {self.svc_config["cluster_infer_ratio"]} \
+            -dm {self.svc_config["diffusion_model_path"]} -dc {self.svc_config["diffusion_config_path"]}"
+        
+        subprocess.run(cmd, shell=True)
 
     def sep_song(self, song_name ,file_path):
         file_ex_path = os.getcwd()+"\\"+file_path
@@ -142,6 +143,13 @@ class convert_music():
         separation_song.multi_model_order_separation()
 
 if __name__ =="__main__":
-    music_moudle=convert_music()
-    music_moudle.add_conversion_task(music_name="運命の人 『ユイカ』", vocal="刻晴[中]")
-
+    svc_config = {
+        "model_path": r"so-vits-svc\logs\44k\G_120000.pth",
+        "config_path": r"so-vits-svc\logs\44k\config.json",
+        "cluster_model_path": r"so-vits-svc\logs\44k\kmeans_10000.pt", # 这里填聚类模型的路径或特征索引文件的路径，如果没有就cluster_infer_ratio设置为 0
+        "cluster_infer_ratio": 0.5, # 注意：如果没有聚类或特征索引文件，就设置为 0
+        "diffusion_model_path": r"so-vits-svc\logs\44k\diffusion\model_50000.pt",
+        "diffusion_config_path": r"so-vits-svc\logs\44k\diffusion\config.yaml"
+    }
+    music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config)
+    music_moudle.add_conversion_task(music_name="伊藤サチコ いつも何度でも", speaker="刻晴[中]")
