@@ -4,7 +4,7 @@
 
 </div>
 
-    这是一个很可爱的软件，您只需要说出自己想听的歌曲就行，她就可以很体贴地唱任何歌曲    ♪(^∇^*)
+    这是一款充满了可爱与趣味的软件，您只需轻声细语地说出心中所想的歌曲，她便能以最贴心、最甜美的方式唱出任何您梦寐以求的旋律。♪(^∇^*)
 
 ### 一、环境要求
 
@@ -46,13 +46,13 @@ pip install -r requirements.txt
 但是这个项目已经于 2024.1 删库跑路了，所以你只能暂时选择一个别人[最近fork的版本的链接](https://github.com/Binaryify/NeteaseCloudMusicApi/forks?include=active&page=1&period=2y&sort_by=last_updated)，然后参考readme进行部署。
 
 #### 4. 一些注意事项
-[必要🎈] 在运行主程序之前，你需要先运行一次ultimatevocalremovergui\UVR.py，确保UVR下载了相关分离模型。这里已经帮你配置了一些模型的配置文件，你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看，也可以参考教程自行配置。
+[必要🍏] 在运行主程序之前，你需要先运行一次ultimatevocalremovergui\UVR.py，确保UVR下载了相关分离模型。这里已经帮你配置了一些模型的配置文件，你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看，也可以参考教程自行配置。
 
 [必要🎉] 在运行主程序之前，确保你已经至少训练了so-vits-svc-4.1的主模型，并填好一些配置和模型的路径
 
-[可选📯] 如果你打算使用NeteaseCloudMusicApi，你需要先运行NeteaseCloudMusicApi。注意：网易云音乐只支持传入歌曲名或歌曲名+歌手名(更精确)
+[可选🌼] 如果你打算使用NeteaseCloudMusicApi，你需要先运行NeteaseCloudMusicApi。注意：网易云音乐只支持传入歌曲名或歌曲名+歌手名(更精确)
 
-[可选🎯] 如果你打算使用B站音视频下载。注意：B站音视频下载支持传入这些：
+[可选🍓] 如果你打算使用B站音视频下载。注意：B站音视频下载支持传入这些：
 <div style="text-align: left;">
     <img src="assets\bili.png" alt="Auto-Convert-Music" width="640px" title="B站" style="border: 1px solid pink; margin: 10px;" />
 </div>
