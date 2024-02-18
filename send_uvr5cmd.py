@@ -237,9 +237,11 @@ class Separation_Song:
         self.kill_by_port(8015)
 
 if __name__ == "__main__":
-    '''目前尚未解决指定模型名推理的问题,只能使用配置文件推理.
-    mdx系列只能配置Ensemble模式, 在MDX模式下配置,保存后的配置文件中的模型名并不是你选择的。VR系列可以在VR模式下配置
-    配置文件得自己在UI界面选择并配置,config即为配置文件名,不带后缀。'''
+    '''
+    1. 目前尚未解决指定单个模型名推理的问题,只能使用配置文件推理。
+    2. 由于原项目的bug, mdx系列只能配置Ensemble模式, 在MDX模式下配置,保存后的配置文件中的模型名并不是你选择的。VR系列可以在VR模式下配置
+    3. 你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看已经配置好的。
+    4. 你也可以按需自行运行UVR.py并在UI界面选择并配置, config即为配置文件名, 不带后缀'''
 
     default_task_dict = {'en':'mdx23c','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
     parser = argparse.ArgumentParser(description='UVR5')

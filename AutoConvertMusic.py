@@ -18,11 +18,15 @@ from logs import LogsBase
 my_logging=LogsBase(__name__)
 
 class convert_music():
+
     os.makedirs("logs", exist_ok=True)
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
-    def __init__(self, music_platform : str, svc_config : dict):
-        self.default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
+
+    def __init__(self, music_platform : str,
+                  svc_config : dict, 
+                  default_task_dict={'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}):
+        self.default_task_dict = default_task_dict
         self.converting=[]
         self.converted=[]
         self.convertfail=[]
@@ -152,6 +156,7 @@ class convert_music():
         separation_song = Separation_Song(file_ex_path ,output_path , self.default_task_dict)
         separation_song.multi_model_order_separation()
 
+
 if __name__ =="__main__":
     svc_config = {
         "model_path": r"sovits4.1\logs\44k\G_120000.pth",
@@ -162,5 +167,6 @@ if __name__ =="__main__":
         "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
     }
     choose_music_platform = ["netease", "bilibili"]
-    music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config)
+    default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
+    music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
     music_moudle.add_conversion_task(music_info="伊藤サチコ いつも何度でも", speaker="神里绫华[中]")

@@ -11,7 +11,11 @@ svc_config = {
     "diffusion_model_path": r"sovits4.1\logs\44k\diffusion\model_50000.pt",
     "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
 }
-music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config)
+
+choose_music_platform = ["netease", "bilibili"]
+default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
+
+music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
 
 app = Flask(__name__)
 speaker = "刻晴[中]"
@@ -36,7 +40,7 @@ def get_status():
 
 @app.route('/append_song/<song_name>', methods=['GET'])
 def convert_task(song_name):
-    status,song_name=music_moudle.add_conversion_task(music_name=str(song_name),speaker="刻晴[中]")
+    status,song_name = music_moudle.add_conversion_task(music_info="伊藤サチコ いつも何度でも", speaker="神里绫华[中]")
     return jsonify({"status": status, "songName": song_name})
 
 @app.route('/get_audio/<song_name>', methods=['GET'])
