@@ -134,11 +134,11 @@ class Bilibili:
 
         file_existed_after_downloading = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.mov", i)]
         music_file = list(set(file_existed_after_downloading) - set(file_existed_before_downloading))[0]
-        music_file = music_file.replace(" ", "")
+        music_file_new = music_file.replace(" ", "")
         if not os.path.exists(f"input/{music_file}"):
-            os.rename(f"input/{music_file}", f"input/{music_file}")
-        music_file_name = os.path.splitext(music_file)[0]
-        music_file_path = os.path.join("input", music_file)
+            os.rename(f"input/{music_file}", f"input/{music_file_new}")
+        music_file_name = os.path.splitext(music_file_new)[0]
+        music_file_path = os.path.join("input", music_file_new)
         return music_file_name, music_file_path
 
 if __name__ == '__main__':
