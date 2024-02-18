@@ -120,12 +120,14 @@ class convert_music():
                         # Read one second of audio at a time, until the file is empty:
                         while f.tell() < f.frames:
                             chunk = f.read(f.samplerate)
-
+                            
+                            # TODO：只因你太美 (Live) 转换错误，这里加一个try catch
                             # Run the audio through our pedalboard:
                             effected = board(chunk, f.samplerate, reset=False)
 
                             # Write the output to our output file:
                             o.write(effected)
+                            
                 break
             time.sleep(0.5)
 
