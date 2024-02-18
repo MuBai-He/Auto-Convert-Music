@@ -153,5 +153,9 @@ logs/*
 
 ultimatevocalremovergui/*/
 ultimatevocalremovergui/data.pkl
+ultimatevocalremovergui/models/
+ultimatevocalremovergui/models/MDX_Net_Models/model_data/model_data.json
+ultimatevocalremovergui/models/MDX_Net_Models/model_data/model_name_mapper.json
+ultimatevocalremovergui/models/VR_Models/model_data/model_data.json
 
 test.py

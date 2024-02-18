@@ -4,12 +4,12 @@ from flask import Flask, jsonify, send_file,abort
 from AutoConvertMusic import *
 
 svc_config = {
-    "model_path": r"so-vits-svc\logs\44k\G_120000.pth",
-    "config_path": r"so-vits-svc\logs\44k\config.json",
-    "cluster_model_path": r"so-vits-svc\logs\44k\kmeans_10000.pt", # 这里填聚类模型的路径或特征索引文件的路径，如果没有就cluster_infer_ratio设置为 0
+    "model_path": r"sovits4.1\logs\44k\G_120000.pth",
+    "config_path": r"sovits4.1\logs\44k\config.json",
+    "cluster_model_path": r"sovits4.1\logs\44k\kmeans_10000.pt", # 这里填聚类模型的路径或特征索引文件的路径，如果没有就cluster_infer_ratio设置为 0
     "cluster_infer_ratio": 0.5, # 注意：如果没有聚类或特征索引文件，就设置为 0
-    "diffusion_model_path": r"so-vits-svc\logs\44k\diffusion\model_50000.pt",
-    "diffusion_config_path": r"so-vits-svc\logs\44k\diffusion\config.yaml"
+    "diffusion_model_path": r"sovits4.1\logs\44k\diffusion\model_50000.pt",
+    "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
 }
 music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config)
 

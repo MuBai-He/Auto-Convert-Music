@@ -11,6 +11,7 @@ from selenium.webdriver.edge.options import Options
 import subprocess
 import sys
 import os
+os.environ["PYTHONIOENCODING"] = "UTF-8"
 
 '''
 综合排序&search_source=5
@@ -117,11 +118,25 @@ class Bilibili:
         else:
             music_url = self.search_music(music_info)
 
-        cmd = sys.executable + f' -m yutto {music_url} --audio-only --output-format-audio-only mkv -d "input" --no-danmaku'
-        out = subprocess.run(cmd, shell=True)
-        print(out)
+        audio_format = "mkv"
+        cmd = sys.executable + f' -m yutto {music_url} --audio-only --output-format-audio-only {audio_format} -d "input" --no-danmaku'
+
+        out = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding="utf-8").stdout
+
+        match = re.search("文件\s*(.*?)\s*已存在", out)
+        if match:
+            music_file = match.group(1)
+            music_file_name = music_file.replace(" ", "")
+            if not os.path.exists(f"input/{music_file_name}.{audio_format}"):
+                os.rename(f"input/{music_file}.{audio_format}", f"input/{music_file_name}.{audio_format}")
+            music_file_path = f"input/{music_file_name}.{audio_format}"
+            return music_file_name, music_file_path
+
         file_existed_after_downloading = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.mov", i)]
         music_file = list(set(file_existed_after_downloading) - set(file_existed_before_downloading))[0]
+        music_file = music_file.replace(" ", "")
+        if not os.path.exists(f"input/{music_file}"):
+            os.rename(f"input/{music_file}", f"input/{music_file}")
         music_file_name = os.path.splitext(music_file)[0]
         music_file_path = os.path.join("input", music_file)
         return music_file_name, music_file_path

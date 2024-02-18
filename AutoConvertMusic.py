@@ -37,18 +37,22 @@ class convert_music():
             raise ValueError("music_platform must be 'netease' or 'bilibili'")
 
     def add_conversion_task(self, music_info, speaker):
-        # 如果input文件夹中已经存在该歌曲的文件, 则获取song_name 和 music_file_path
+
+        find = False
         exist_files = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.ogg|.wav|.mp3", i)]
         for file in exist_files:
             if music_info in file:
                 song_name = music_info
                 music_file_path = f"input/{file}"
-            else:
-                if self.music_platform == "netease":
-                    id, song_name = self.net_music.search_music(song_name=music_info)
-                    song_name, music_file_path = self.net_music.download_music(id)
-                elif self.music_platform == "bilibili":
-                    song_name, music_file_path=self.bili_music.download_music(music_info)
+                find = True
+                break
+
+        if not find:
+            if self.music_platform == "netease":
+                id, song_name = self.net_music.search_music(song_name=music_info)
+                song_name, music_file_path = self.net_music.download_music(id)
+            elif self.music_platform == "bilibili":
+                song_name, music_file_path=self.bili_music.download_music(music_info)
 
         if os.path.exists(f"output/{song_name}/{song_name}_{speaker}.wav")==True:
             self.converted.append(song_name)
@@ -65,8 +69,8 @@ class convert_music():
 
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
-            music_name, speaker = self.waiting_queue.get()
-            self.add_conversion_task(music_name, speaker)
+            music_info, speaker = self.waiting_queue.get()
+            self.add_conversion_task(music_info, speaker)
 
     def convert_music(self,name, music_file_path, speaker):
         try:
@@ -75,9 +79,9 @@ class convert_music():
                 self.sep_song(song_name=name,file_path=music_file_path)
             my_logging.info(f'2.调用UVR分离声音：人声mdx23c->和声6-HP->混响De-Echo-Normal 完成:{name}')
             if not os.path.exists(f"output/{name}/Vocals_{speaker}.wav"):
-                self.convert_vocals(song_name=name,vocal=speaker)
+                self.convert_vocals(song_name=name,speaker=speaker)
             my_logging.info(f'3.调用sovits4.1变声完成:{name}')
-            self.vocal_processing(song_name=name,vocal=speaker)
+            self.vocal_processing(song_name=name,speaker=speaker)
             my_logging.info(f'4.音效处理完成:{name}')
             self.mix_music(name,speaker)
             my_logging.info(f'5.组合背景乐、和声完成:{name}')
@@ -127,11 +131,17 @@ class convert_music():
             time.sleep(0.5)
 
     def convert_vocals(self,song_name, speaker):
+        model_path = self.svc_config["model_path"]
+        config_path = self.svc_config["config_path"]
         clean_names = f'./output/{song_name}/Vocals.wav'
-        cmd = sys.executable + f" so-vits-svc/inference_main.py -m {self.svc_config["model_path"]} \
-            -c {self.svc_config["config_path"]} -n {clean_names} -s {speaker} \
-            -cm {self.svc_config["cluster_model_path"]} -cr {self.svc_config["cluster_infer_ratio"]} \
-            -dm {self.svc_config["diffusion_model_path"]} -dc {self.svc_config["diffusion_config_path"]}"
+        cluster_model_path = self.svc_config["cluster_model_path"]
+        cluster_infer_ratio = self.svc_config["cluster_infer_ratio"]
+        diffusion_model_path = self.svc_config["diffusion_model_path"]
+        diffusion_config_path = self.svc_config["diffusion_config_path"]
+        cmd = sys.executable + f" sovits4.1/inference_main.py -m {model_path} \
+            -c {config_path} -n {clean_names} -s {speaker} \
+            -cm {cluster_model_path} -cr {cluster_infer_ratio} \
+            -dm {diffusion_model_path} -dc {diffusion_config_path}"
         
         subprocess.run(cmd, shell=True)
 
@@ -144,12 +154,13 @@ class convert_music():
 
 if __name__ =="__main__":
     svc_config = {
-        "model_path": r"so-vits-svc\logs\44k\G_120000.pth",
-        "config_path": r"so-vits-svc\logs\44k\config.json",
-        "cluster_model_path": r"so-vits-svc\logs\44k\kmeans_10000.pt", # 这里填聚类模型的路径或特征索引文件的路径，如果没有就cluster_infer_ratio设置为 0
+        "model_path": r"sovits4.1\logs\44k\G_120000.pth",
+        "config_path": r"sovits4.1\logs\44k\config.json",
+        "cluster_model_path": r"sovits4.1\logs\44k\kmeans_10000.pt", # 这里填聚类模型的路径或特征索引文件的路径，如果没有就cluster_infer_ratio设置为 0
         "cluster_infer_ratio": 0.5, # 注意：如果没有聚类或特征索引文件，就设置为 0
-        "diffusion_model_path": r"so-vits-svc\logs\44k\diffusion\model_50000.pt",
-        "diffusion_config_path": r"so-vits-svc\logs\44k\diffusion\config.yaml"
+        "diffusion_model_path": r"sovits4.1\logs\44k\diffusion\model_50000.pt",
+        "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
     }
+    choose_music_platform = ["netease", "bilibili"]
     music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config)
-    music_moudle.add_conversion_task(music_name="伊藤サチコ いつも何度でも", speaker="刻晴[中]")
+    music_moudle.add_conversion_task(music_info="伊藤サチコ いつも何度でも", speaker="神里绫华[中]")

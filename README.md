@@ -4,7 +4,8 @@
  
 </div>
 
-这是一个令人兴奋的软件，它可以让AI自动唱歌！使用先进的音频处理技术，这个软件能够从您喜欢的歌曲中提取人声，并由AI进行演唱。（精神错乱的AI发言~
+这是一个令人兴奋的软件，它可以一条龙式让AI自动进行歌声转换，不需要任何人工干预。
+
 ## 部署指南
 ### 环境要求
 在开始使用之前，请确保您已经部署了[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)项目。  
