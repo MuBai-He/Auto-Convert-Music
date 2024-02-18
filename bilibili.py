@@ -135,9 +135,9 @@ class Bilibili:
         file_existed_after_downloading = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.mov", i)]
         music_file = list(set(file_existed_after_downloading) - set(file_existed_before_downloading))[0]
         music_file_new = music_file.replace(" ", "")
-        if not os.path.exists(f"input/{music_file}"):
+        if not os.path.exists(f"input/{music_file_new}"):
             os.rename(f"input/{music_file}", f"input/{music_file_new}")
-        music_file_name = os.path.splitext(music_file_new)[0]
+        music_file_name = music_file_new[:-4]
         music_file_path = os.path.join("input", music_file_new)
         return music_file_name, music_file_path
 
@@ -148,5 +148,6 @@ if __name__ == '__main__':
     music_info = "ハロ／ハワユ 鹿乃"
     music_info = "璃月 陈致逸"
     music_info = "伊藤サチコ いつも何度でも"
+    music_info = "https://www.bilibili.com/video/BV1ws411Y7wi/?spm_id_from=333.337.search-card.all.click"
     Bi = Bilibili()
     print(Bi.download_music(music_info= music_info))
