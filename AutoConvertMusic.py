@@ -46,8 +46,11 @@ class convert_music():
         exist_files = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.ogg|.wav|.mp3", i)]
         for file in exist_files:
             if music_info in file:
-                song_name = music_info
-                music_file_path = f"input/{file}"
+                file_new_name = re.sub(r"[&@#$%^【】。，、‘’：；“《》”？（）\s]+", "_", file)
+                if not os.path.exists(f"input/{file_new_name}"):
+                    os.rename(f"input/{file}", f"input/{file_new_name}")
+                song_name = file_new_name[:-4]
+                music_file_path = f"input/{file_new_name}"
                 find = True
                 break
 
@@ -169,4 +172,4 @@ if __name__ =="__main__":
     choose_music_platform = ["netease", "bilibili"]
     default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
     music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
-    music_moudle.add_conversion_task(music_info="伊藤サチコ いつも何度でも", speaker="神里绫华[中]")
+    music_moudle.add_conversion_task(music_info="さようなら、花泥棒さん (cover)", speaker="神里绫华[中]")
