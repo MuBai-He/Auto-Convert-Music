@@ -4,17 +4,17 @@
 
 </div>
 
-    这是一款充满了可爱与趣味的软件，您只需轻声细语地说出心中所想的歌曲，她便能以最贴心、最甜美的方式唱出任何您梦寐以求的旋律。♪(^∇^*)
+    这是一款全自动歌声转换软件，集成了网易云音乐下载、B站音视频下载、歌声分离、歌声转换等功能。欢迎大家的使用，谢谢喵😊ヾ(≧▽≦*)
 
 ### 一、环境要求
 
-[必要🎄]  python版本要求：3.8、3.9、3.10，目前只在python3.10上测试过。推荐使用conda创建虚拟环境,[安装教程](https://zhuanlan.zhihu.com/p/511233749)。
+[必要🎄]  python版本要求：3.8、3.9、3.10，目前只在python3.10上测试过。推荐使用conda创建虚拟环境, [安装教程](https://zhuanlan.zhihu.com/p/511233749), [pip换源教程](https://www.cnblogs.com/137point5/p/15000954.html)。
 
 [必要🌴]  本项目使用了UVR5和so-vits-svc，请确保你有一张显存大于4G以上的NVIDIA GPU, 且安装了支持cuda版本的[torch](https://pytorch.org/), 推荐安装1.13及以上版本。
 
 [可选🍀]  如果你想用NeteaseCloudMusicApi，请确保你已经安装了nodejs，[nodejs安装教程](https://blog.csdn.net/qq_42006801/article/details/124830995?spm=1001.2014.3001.5506)。
 
-[可选🌵]  如果你想用B站音视频下载，请确保你已经安装了ffmpeg，并配置了环境变量，[安装教程](https://zhuanlan.zhihu.com/p/118362010)。
+[可选🌵]  如果你想用B站音视频下载，请确保你已经安装了ffmpeg，并配置了环境变量，[ffmpeg安装教程](https://zhuanlan.zhihu.com/p/118362010)。
 
 
 ### 二、安装
@@ -79,7 +79,7 @@ UVR5的使用可以参考bfloat16大佬分享的[教程](https://www.bilibili.co
 
 B站音视频下载支持来源于一个超可爱的项目[yutto](https://github.com/yutto-dev/yutto)，请给yutto一个可爱的star，谢谢喵😊ヾ(≧▽≦*)o 
 
-最后，非常感谢以上项目的作者和贡献者以及一些这里未列出的第三方pypi库的项目，请给他们一个可爱的star，请给他们一个可爱的star，请给他们一个可爱的star，请给他们一个可爱的star，谢谢喵🤗ヾ(≧▽≦*)o
+最后，非常感谢以上项目的作者和贡献者以及一些这里未列出的第三方pypi库的项目，请给他们一个可爱的star，请给他们一个可爱的star，请给他们一个可爱的star，谢谢喵🤗ヾ(≧▽≦*)o
 
 ### 五、贡献  
 

@@ -107,9 +107,12 @@ class Bilibili:
     def search_music(self, music_singer_name: str) -> str:
         music_template = "{} 音乐 歌曲 高音质 听歌 Hi-Res Hi-Fi 无损音质 百万级录音棚"
         keyword = music_template.format(music_singer_name)
-        music_url = self.bilibili_music_search.run(keyword= keyword, partition="音乐",duration="0-10", start=1, end=1)[0]
+        music_url_list = self.bilibili_music_search.run(keyword=keyword, partition="音乐", duration="0-10", start=1, end=1)
+        while not music_url_list:
+            print("获取音乐URL失败，正在重试...")
+            music_url_list = self.bilibili_music_search.run(keyword=keyword, partition="音乐", duration="0-10", start=1, end=1)
 
-        return music_url
+        return music_url_list[0]
     
     def download_music(self, music_info: str) -> str:
         file_existed_before_downloading = [i for i in os.listdir("input") if re.search(r".mkv|.aac|.flac|.mp4|.mov", i)]
