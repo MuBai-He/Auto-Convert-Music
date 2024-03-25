@@ -67,7 +67,22 @@ class Netease_music():
         with open( file_name, 'wb') as f:
             f.write(song.content)
         return name,file_name
-
+    
+    def download_music(self,id,download_folder,vocal,level="exhigh"):
+        song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
+        song_url=json.loads(song_url)['data'][0]['url']
+        song=self.netease.get(song_url)
+        name=self.netease.get(self.address+f"/song/detail?ids={id}").text
+        name=json.loads(name)['songs'][0]['name']
+        name = re.sub(r'[\[\]<>:"/\\|?*.]', '', name).rstrip('. ')  #特殊字符处理
+        suffix = song_url.split(".")[-1]
+        file_name=f'{download_folder}\\{name}\\{name}_{vocal}.wav'
+        if not os.path.exists(f'{download_folder}\\{name}\\'):
+            os.mkdir(f'{download_folder}\\{name}\\')
+        with open(file_name, 'wb') as f:
+            f.write(song.content)
+        return name,file_name
+    
     def log_in(self):
         print("######################################################\n"
               "                       请选择登陆方式\n"

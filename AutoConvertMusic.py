@@ -45,6 +45,24 @@ class convert_music():
                 self.waiting_queue.put((music_name, vocal))
                 return "waiting",song_name
 
+    def download_task(self, music_name):
+        #获取网易歌库歌曲名称
+        id,song_name=self.music_info(song_name=music_name)
+        #判断歌曲是否生成
+        if os.path.exists(f"output/{song_name}/{song_name}.wav")==True:
+            self.converted.append(song_name)
+            return "processed",song_name
+        # 下载歌曲
+        my_logging.info(f'开始下载歌曲:{music_name}')
+        D_name,file_path = self.net_music.download_music(id=id,download_folder="output",vocal="刻晴[中]")
+        my_logging.info(f'1.下载歌曲完成:{music_name}')
+        # 歌曲完成标志
+        self.converted.append(music_name)
+        if music_name in self.convertfail:
+           self.convertfail.remove(music_name)
+        my_logging.info(f'歌曲完成转换:{music_name}')
+        return "processed",song_name
+
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
             music_name, vocal = self.waiting_queue.get()

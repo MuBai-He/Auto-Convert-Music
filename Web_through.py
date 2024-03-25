@@ -30,9 +30,16 @@ def get_status():
         'converted_file': file_name
     })
 
+# 音乐变声任务
 @app.route('/append_song/<song_name>', methods=['GET'])
 def convert_task(song_name):
     status,song_name=music_moudle.add_conversion_task(music_name=str(song_name),vocal="刻晴[中]")
+    return jsonify({"status": status, "songName": song_name})
+
+# 直接下载原始音乐
+@app.route('/download_song/<song_name>', methods=['GET'])
+def download_task(song_name):
+    status,song_name=music_moudle.download_task(music_name=str(song_name))
     return jsonify({"status": status, "songName": song_name})
 
 @app.route('/get_audio/<song_name>', methods=['GET'])
