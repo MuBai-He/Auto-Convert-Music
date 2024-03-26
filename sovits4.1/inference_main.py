@@ -8,9 +8,6 @@ from inference.infer_tool import Svc
 from spkmix import spk_mix_map
 
 logging.getLogger('numba').setLevel(logging.WARNING)
-chunks_dict = infer_tool.read_temp("sovits4.1/inference/chunks_temp.json")
-
-
 
 def main():
     import argparse

@@ -5,7 +5,7 @@ from vencoder.encoder import SpeechEncoder
 
 
 class ContentVec768L9_Onnx(SpeechEncoder):
-    def __init__(self,vec_path = "pretrain/vec-768-layer-9.onnx",device=None):
+    def __init__(self,vec_path = "sovits4.1/pretrain/vec-768-layer-9.onnx",device=None):
         super().__init__()
         print("load model(s) from {}".format(vec_path))
         self.hidden_dim = 768

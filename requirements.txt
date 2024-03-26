@@ -44,3 +44,4 @@ flask
 samplerate
 yutto
 selenium
+yt_dlp

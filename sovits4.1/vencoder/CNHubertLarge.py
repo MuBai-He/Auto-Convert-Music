@@ -5,7 +5,7 @@ from vencoder.encoder import SpeechEncoder
 
 
 class CNHubertLarge(SpeechEncoder):
-    def __init__(self, vec_path="pretrain/chinese-hubert-large-fairseq-ckpt.pt", device=None):
+    def __init__(self, vec_path="sovits4.1/pretrain/chinese-hubert-large-fairseq-ckpt.pt", device=None):
         super().__init__()
         print("load model(s) from {}".format(vec_path))
         self.hidden_dim = 1024

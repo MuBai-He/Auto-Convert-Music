@@ -6,7 +6,7 @@ from vencoder.whisper.model import ModelDimensions, Whisper
 
 
 class WhisperPPG(SpeechEncoder):
-    def __init__(self, vec_path="pretrain/medium.pt", device=None):
+    def __init__(self, vec_path="sovits4.1/pretrain/medium.pt", device=None):
         super().__init__()
         if device is None:
             self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")

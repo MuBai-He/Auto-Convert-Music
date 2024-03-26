@@ -5,7 +5,7 @@ from vencoder.encoder import SpeechEncoder
 
 
 class ContentVec256L9(SpeechEncoder):
-    def __init__(self, vec_path="pretrain/checkpoint_best_legacy_500.pt", device=None):
+    def __init__(self, vec_path="sovits4.1/pretrain/checkpoint_best_legacy_500.pt", device=None):
         super().__init__()
         print("load model(s) from {}".format(vec_path))
         models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(

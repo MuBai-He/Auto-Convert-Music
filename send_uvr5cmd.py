@@ -14,11 +14,22 @@ import time
 import json
 import loguru
 import psutil
+import tools
 from logs import LogsBase
 
 my_logging=LogsBase(__name__)
 
 class SendUvr5Config:
+    if not tools.check_uvr()[1]:
+        tools.DownloadGithubProject("MiyazonoKaori137/ultimatevocalremovergui",
+                                     os.getcwd(), ["UVR.py", "separate.py"])
+        
+    uvr_folder, uvr_exist = tools.check_uvr()
+    if uvr_exist:
+        if not os.path.exists(f"{uvr_folder}/UVR-CLI.py"):
+            shutil.copy("assets/code/UVR-CLI.py", uvr_folder)
+        tools.copy_folder("assets/uvr5_config", f"{uvr_folder}/gui_data")
+    
     def __init__(self, audio_format = 'WAV', device = True, select_stem = 'all', ui_min = True):
         self.ip_port = '127.0.0.1:8015'
         self.site = f'http://{self.ip_port}'
@@ -29,11 +40,11 @@ class SendUvr5Config:
 
     # 发送输入的音频文件
     def send_input_file(self,select_input):
-        uri = quote(';'.join(select_input), encoding='utf8')
+        uri = quote(';'.join(select_input), encoding='utf-8')
         req = requests.get(f'{self.site}/input?path={uri}')
         if req.ok:
-            print(req.content.decode(encoding='utf8'))
-            return req.content.decode(encoding='utf8')
+            print(req.content.decode(encoding='utf-8'))
+            return req.content.decode(encoding='utf-8')
     
     # 选择输出路径
     def send_output_folder(self,select_output):
@@ -105,7 +116,7 @@ class SendUvr5Config:
         if self.check_port_open():
             self.send_ui_min()
             return
-        uvr5 = sys.executable + " ultimatevocalremovergui/UVR.py"
+        uvr5 = sys.executable + " ultimatevocalremovergui/UVR-CLI.py"
         process = subprocess.Popen(uvr5, shell=True)
         while True:
             if self.check_port_open():
@@ -250,8 +261,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     separation_song = Separation_Song(args.input_audio, args.output_folder, default_task_dict)
-    # separation_song = Separation_Song(r"D:\Project\test_uvr5\audio\input\lovely.mp3", r"D:\Project\test_uvr5\audio\output", default_task_dict)
     separation_song.multi_model_order_separation()
-
-    # 运行完成后，输出文件夹中会有两个文件，Vocals.wav为人声，Instrumental.wav为伴奏，temp文件夹为临时文件夹，会自动删除
-    # python send_uvr5cmd.py -i "D:\test\test.wav" -o "D:\test\test"

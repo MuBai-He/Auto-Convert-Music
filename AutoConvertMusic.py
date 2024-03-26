@@ -14,6 +14,7 @@ from pydub import AudioSegment
 from pedalboard import Pedalboard,Compressor,NoiseGate,Gain,HighpassFilter
 from pedalboard.io import AudioFile
 from logs import LogsBase
+import importlib
 
 my_logging=LogsBase(__name__)
 
@@ -37,8 +38,10 @@ class convert_music():
             self.net_music = netease.Netease_music()
         elif self.music_platform == "bilibili":
             self.bili_music = bilibili.Bilibili()
+        elif self.music_platform == "youtube":
+            self.youtube_music = importlib.import_module("youtube")
         else:
-            raise ValueError("music_platform must be 'netease' or 'bilibili'")
+            raise ValueError("music_platform must be 'netease' or 'bilibili' or 'youtube'!")
 
     def add_conversion_task(self, music_info, speaker):
 
@@ -60,6 +63,8 @@ class convert_music():
                 song_name, music_file_path = self.net_music.download_music(id)
             elif self.music_platform == "bilibili":
                 song_name, music_file_path=self.bili_music.download_music(music_info)
+            elif self.music_platform == "youtube":
+                song_name, music_file_path = self.youtube_music.search_download(music_info)
 
         if os.path.exists(f"output/{song_name}/{song_name}_{speaker}.wav")==True:
             self.converted.append(song_name)
@@ -169,7 +174,7 @@ if __name__ =="__main__":
         "diffusion_model_path": r"sovits4.1\logs\44k\diffusion\model_50000.pt",
         "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
     }
-    choose_music_platform = ["netease", "bilibili"]
+    choose_music_platform = ["netease", "bilibili", "youtube"]
     default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
     music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
-    music_moudle.add_conversion_task(music_info="さようなら、花泥棒さん (cover)", speaker="神里绫华[中]")
+    music_moudle.add_conversion_task(music_info="Love Story Taylor Swift", speaker="神里绫华[中]")
