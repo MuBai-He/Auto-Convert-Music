@@ -11,7 +11,7 @@ import bilibili
 import sys
 from pathlib import Path
 from pydub import AudioSegment
-from pedalboard import Pedalboard,Compressor,NoiseGate,Gain,HighpassFilter
+from pedalboard import Pedalboard,Compressor,NoiseGate,Gain,HighpassFilter,Reverb
 from pedalboard.io import AudioFile
 from logs import LogsBase
 import importlib
@@ -35,11 +35,11 @@ class convert_music():
         self.music_platform = music_platform
         self.svc_config = svc_config
         if self.music_platform == "netease":
-            self.net_music = netease.Netease_music()
+            self.platform = netease.Netease_music()
         elif self.music_platform == "bilibili":
-            self.bili_music = bilibili.Bilibili()
+            self.platform = bilibili.Bilibili()
         elif self.music_platform == "youtube":
-            self.youtube_music = importlib.import_module("youtube")
+            self.platform = importlib.import_module("youtube")
         else:
             raise ValueError("music_platform must be 'netease' or 'bilibili' or 'youtube'!")
 
@@ -58,13 +58,7 @@ class convert_music():
                 break
 
         if not find:
-            if self.music_platform == "netease":
-                id, song_name = self.net_music.search_music(song_name=music_info)
-                song_name, music_file_path = self.net_music.download_music(id)
-            elif self.music_platform == "bilibili":
-                song_name, music_file_path=self.bili_music.download_music(music_info)
-            elif self.music_platform == "youtube":
-                song_name, music_file_path = self.youtube_music.search_download(music_info)
+            song_name, music_file_path=self.platform.download_music(music_info)
 
         if os.path.exists(f"output/{song_name}/{song_name}_{speaker}.wav")==True:
             self.converted.append(song_name)
@@ -86,7 +80,7 @@ class convert_music():
 
     def convert_music(self,name, music_file_path, speaker):
         try:
-            my_logging.info(f'开始转换歌曲:{name}')
+            my_logging.info(f'1.开始转换歌曲:{name}')
             if not os.path.exists(f"output/{name}/Vocals.wav"):
                 self.sep_song(song_name=name,file_path=music_file_path)
             my_logging.info(f'2.调用UVR分离声音：人声mdx23c->和声6-HP->混响De-Echo-Normal 完成:{name}')
@@ -127,10 +121,12 @@ class convert_music():
         output.export(f"output/{song_name}/{song_name}_{speaker}.wav", format="wav")
 
     def vocal_processing(self,song_name,speaker):
-        board = Pedalboard(
-            [Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
-             HighpassFilter(cutoff_frequency_hz=110),
-             Gain(gain_db=3)])
+        board = Pedalboard([
+            Compressor(release_ms=150, attack_ms=5, threshold_db=3, ratio=3),
+            HighpassFilter(cutoff_frequency_hz=110),
+            Gain(gain_db=3),
+            Reverb(room_size=0.22, damping=0.5, wet_level=0.22, dry_level=0.66, width=0.66)
+        ])
 
         vocal_path=fr"output/{song_name}/Vocals_{speaker}.wav"
 
@@ -165,7 +161,7 @@ class convert_music():
         separation_song.multi_model_order_separation()
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     svc_config = {
         "model_path": r"sovits4.1\logs\44k\G_120000.pth",
         "config_path": r"sovits4.1\logs\44k\config.json",
@@ -176,5 +172,5 @@ if __name__ =="__main__":
     }
     choose_music_platform = ["netease", "bilibili", "youtube"]
     default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
-    music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
-    music_moudle.add_conversion_task(music_info="Love Story Taylor Swift", speaker="神里绫华[中]")
+    music_moudle=convert_music(music_platform="netease", svc_config=svc_config, default_task_dict=default_task_dict)
+    music_moudle.add_conversion_task(music_info="千里邀月 乐正绫 泠鸢yousa 茶理理 Hanser 三无", speaker="神里绫华[中]")

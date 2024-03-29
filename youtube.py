@@ -33,7 +33,7 @@ def download_youtube_audio(url: str, output_path: str):
         info = ydl.extract_info(url, download=True)
         # print(info)
 
-def search_download(music_info, output_path="./input", max_results=1):
+def download_music(music_info, output_path="./input", max_results=1):
     file_existed_before_downloading = [i for i in os.listdir("input") 
                                        if re.search(r".mkv|.aac|.flac|.mp4|.mov|.wav", i)]
     if re.search(r"youtube.com/watch", music_info):
@@ -57,6 +57,6 @@ def search_download(music_info, output_path="./input", max_results=1):
 
 
 if __name__ == "__main__":
-    music_info = "青柠 桃十五"    # 尽量加上歌手名，否则搜到的是其他的
+    music_info = "青柠 桃十五"    # 尽量加上歌手名，否则搜到的可能是其他的
     # music_info = "https://www.youtube.com/watch?v=BKblrXHumDk"
-    print(search_download(music_info))
+    print(download_music(music_info))

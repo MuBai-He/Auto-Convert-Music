@@ -28,7 +28,8 @@ class SendUvr5Config:
     if uvr_exist:
         if not os.path.exists(f"{uvr_folder}/UVR-CLI.py"):
             shutil.copy("assets/code/UVR-CLI.py", uvr_folder)
-        tools.copy_folder("assets/uvr5_config", f"{uvr_folder}/gui_data")
+        if not os.path.exists(f"{uvr_folder}/gui_data/saved_ensembles/mdx23c.json"):
+            tools.copy_folder("assets/uvr5_config", f"{uvr_folder}/gui_data")
     
     def __init__(self, audio_format = 'WAV', device = True, select_stem = 'all', ui_min = True):
         self.ip_port = '127.0.0.1:8015'

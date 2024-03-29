@@ -50,7 +50,8 @@ class Netease_music():
             f.write(song.content)
         return name,file_path
 
-    def download_music(self,id,level="exhigh"):
+    def download_music(self,music_info,level="exhigh"):
+        id, _ = self.search_music(song_name=music_info)
         if not os.path.exists('input'):
             os.mkdir('input')
         song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text

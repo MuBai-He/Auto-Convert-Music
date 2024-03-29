@@ -140,22 +140,17 @@ dmypy.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
-sovits4.1/*
-output/*
-input/*
+sovits4.1/
+output/
+input/
 
 *.pyc
 netease.txt
 
-NeteaseCloudMusicApi/*
-logs/*
+NeteaseCloudMusicApi/
+logs/
 .idea/
 
-ultimatevocalremovergui/*/
-ultimatevocalremovergui/data.pkl
-ultimatevocalremovergui/models/
-ultimatevocalremovergui/models/MDX_Net_Models/model_data/model_data.json
-ultimatevocalremovergui/models/MDX_Net_Models/model_data/model_name_mapper.json
-ultimatevocalremovergui/models/VR_Models/model_data/model_data.json
+ultimatevocalremovergui/
 
 test.py
