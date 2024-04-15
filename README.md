@@ -10,7 +10,7 @@
 
 [必要🎄]  python版本要求：3.8、3.9、3.10，目前只在python3.10上测试过。推荐使用conda创建虚拟环境, [安装教程](https://zhuanlan.zhihu.com/p/511233749), [pip换源教程](https://www.cnblogs.com/137point5/p/15000954.html)。
 
-[必要🌴]  本项目使用了UVR5和so-vits-svc，请确保你有一张显存大于4G以上的NVIDIA GPU, 且安装了支持cuda版本的[torch](https://pytorch.org/), 推荐安装1.13及以上版本。
+[必要🌴]  本项目使用了UVR5和so-vits-svc，请确保你有一张显存大于4G以上的NVIDIA GPU, 且安装了支持cuda版本的[torch、torchaudio](https://pytorch.org/), 因为bs_roformer的需求，必须安装2.0及以上版本。注：本项目目前已支持UVR5分支v5.6.0_roformer_add的CIL
 
 [可选🍀]  如果你想用NeteaseCloudMusicApi，请确保你已经安装了nodejs，[nodejs安装教程](https://blog.csdn.net/qq_42006801/article/details/124830995?spm=1001.2014.3001.5506)。
 
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ```bash
 python tools.py
 ```
-然后运行ultimatevocalremovergui/UVR-CLI.py参照教程下载好所需的模型，也可自行配置
+然后运行ultimatevocalremovergui/UVR-CLI.py参照[教程](https://www.bilibili.com/read/cv27499700/)下载好所需的模型，也可自行配置
 ```bash
 python ultimatevocalremovergui/UVR-CLI.py
 ```
@@ -57,7 +57,7 @@ python ultimatevocalremovergui/UVR-CLI.py
 但是这个项目已经于 2024.1 删库跑路了，所以你只能暂时选择一个别人[最近fork的版本的链接](https://github.com/Binaryify/NeteaseCloudMusicApi/forks?include=active&page=1&period=2y&sort_by=last_updated)，然后参考readme进行部署。
 
 #### 5. 一些注意事项
-[必要🍏] 在运行主程序之前，你需要先运行一次ultimatevocalremovergui\UVR.py，确保UVR下载了相关分离模型。这里已经帮你配置了一些模型的配置文件，你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看，也可以参考教程自行配置。
+[必要🍏] 在运行主程序之前，你需要先运行一次ultimatevocalremovergui\UVR-CLI.py，确保UVR-CLI下载了相关分离模型。这里已经帮你配置了一些模型的配置文件，你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看，也可以参考教程自行配置。
 
 [必要🎉] 在运行主程序之前，确保你已经至少训练了so-vits-svc-4.1的主模型，并填好一些配置和模型的路径
 

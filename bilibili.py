@@ -11,6 +11,7 @@ from selenium.webdriver.edge.options import Options
 import subprocess
 import sys
 import os
+from loguru import logger
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 
 '''
@@ -85,7 +86,7 @@ class BilVideoSpider(object):
         sub_url_lists = []
 
         for page in range(start, end + 1):
-            print('开始解析第{}页'.format(page))
+            logger.info('开始解析第{}页'.format(page))
             search_url = rf'https://search.bilibili.com/video?&keyword={keyword}&tids={tid}&page={page}&o={30*(page-1)}&duration={which_duration}'
 
             sub_url_list = self.parse_search_html(
@@ -104,13 +105,18 @@ class Bilibili:
     def __init__(self,):
         self.bilibili_music_search = BilVideoSpider()
 
-    def search_music(self, music_singer_name: str) -> str:
+    def search_music(self, music_singer_name: str, max_retry:int = 5) -> str:
         music_template = "{} 音乐 歌曲 高音质 听歌 Hi-Res Hi-Fi 无损音质 百万级录音棚"
         keyword = music_template.format(music_singer_name)
         music_url_list = self.bilibili_music_search.run(keyword=keyword, partition="音乐", duration="0-10", start=1, end=1)
+        count = 0
         while not music_url_list:
-            print("获取音乐URL失败，正在重试...")
+            logger.warning("获取音乐URL失败，正在重试...")
             music_url_list = self.bilibili_music_search.run(keyword=keyword, partition="音乐", duration="0-10", start=1, end=1)
+            count += 1
+            if count > max_retry:
+                logger.error("获取音乐URL失败，已达到最大重试次数！请尝试更换平台或者关键词！ B站对各种语言的歌曲支持力度：中文>英文=日文>其他语言")
+                raise ValueError("获取音乐URL失败，已达到最大重试次数！请尝试更换平台或者关键词！")
 
         return music_url_list[0]
     
@@ -122,6 +128,7 @@ class Bilibili:
             music_url = self.search_music(music_info)
 
         audio_format = "mkv"
+        logger.success(f"开始下载音乐: {music_url}")
         cmd = sys.executable + f' -m yutto {music_url} --audio-only --output-format-audio-only {audio_format} -d "input" --no-danmaku'
 
         out = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding="utf-8").stdout

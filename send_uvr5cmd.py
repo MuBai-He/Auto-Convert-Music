@@ -16,22 +16,13 @@ import loguru
 import psutil
 import tools
 from logs import LogsBase
+from typing import Union
 
 my_logging=LogsBase(__name__)
 
 class SendUvr5Config:
-    if not tools.check_uvr()[1]:
-        tools.DownloadGithubProject("MiyazonoKaori137/ultimatevocalremovergui",
-                                     os.getcwd(), ["UVR.py", "separate.py"])
-        
-    uvr_folder, uvr_exist = tools.check_uvr()
-    if uvr_exist:
-        if not os.path.exists(f"{uvr_folder}/UVR-CLI.py"):
-            shutil.copy("assets/code/UVR-CLI.py", uvr_folder)
-        if not os.path.exists(f"{uvr_folder}/gui_data/saved_ensembles/mdx23c.json"):
-            tools.copy_folder("assets/uvr5_config", f"{uvr_folder}/gui_data")
-    
-    def __init__(self, audio_format = 'WAV', device = True, select_stem = 'all', ui_min = True):
+    tools.main1()
+    def __init__(self, audio_format = 'wav', device = True, select_stem = 'all', ui_min = True):
         self.ip_port = '127.0.0.1:8015'
         self.site = f'http://{self.ip_port}'
         self.audio_format = audio_format
@@ -39,7 +30,7 @@ class SendUvr5Config:
         self.select_stem = select_stem
         self.ui_min = ui_min
 
-    # 发送输入的音频文件
+    # 发送输入的音频文件, 可以单个或多个文件
     def send_input_file(self,select_input):
         uri = quote(';'.join(select_input), encoding='utf-8')
         req = requests.get(f'{self.site}/input?path={uri}')
@@ -155,6 +146,24 @@ def single_model_separation(input_file_path, output_folder, task_mode, config_na
     send_config.send_select_stem()
     send_config.start_processing()
 
+def msst_separation(input_file: Union[list[str], str], output_folder: str, model_type: str = 'bs-roformer-1296'):
+    tools.main2()
+    model_type_ = "bs_roformer"
+    if "1296" in model_type:
+        name = "model_bs_roformer_ep_368_sdr_12.9628"
+    elif "1297" in model_type:
+        name = "model_bs_roformer_ep_317_sdr_12.9755"
+    elif "1053" in model_type:
+        name = "model_bs_roformer_ep_937_sdr_10.5309"
+    config_path = f"Music-Source-Separation-Training/configs/viperx/{name}.yaml"
+    start_check_point = f"Music-Source-Separation-Training/results/{name}.ckpt"
+    tools.download_model(f"https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/{name}.ckpt",
+                    "Music-Source-Separation-Training/results", f"{name}.ckpt")
+    cmd = sys.executable + f" Music-Source-Separation-Training/inference-opt.py --model_type {model_type_} \
+        --config_path {config_path} --start_check_point {start_check_point} --input {input_file} \
+            --store_dir {output_folder}"
+    
+    subprocess.run(cmd, shell=True)
 
 class Separation_Song:
     def __init__(self, input_file_path, output_folder, task_dict):
@@ -183,8 +192,12 @@ class Separation_Song:
         return model_name
         
     def wait_finish_inference(self,idx):
-        model_name = str(self.get_model_name(idx)).lower()
-        need_test_file = ["(No Echo)","(Echo)"] if "echo" in model_name else ["(Vocals)", "(Instrumental)"]
+        if self.keys_list[idx].lower()[:2] != 'ms':
+            model_name = str(self.get_model_name(idx)).lower()
+            need_test_file = ["(No Echo)","(Echo)"] if "echo" in model_name else ["(Vocals)", "(Instrumental)"]
+        elif self.keys_list[idx].lower()[:2] == 'ms':
+            need_test_file = ["vocals", "instrumental"]
+
         while True:
             file_list = os.listdir(self.temp_folder)
             for file in file_list:
@@ -232,9 +245,12 @@ class Separation_Song:
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
             loguru.logger.info(f"开始第{idx}个模型分离,模型任务为：{self.task_dict[task]}")
-            single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
+            if task.lower()[:2] != 'ms':
+                single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
+            else:
+                msst_separation(self.input_file_path, self.temp_folder)
             self.check_file_exist(self.temp_folder, idx)
-            loguru.logger.success(f"第{idx}个模型分离完成")
+            loguru.logger.success(f"第{idx+1}个模型分离完成")
 
         shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
         shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
@@ -253,9 +269,11 @@ if __name__ == "__main__":
     1. 目前尚未解决指定单个模型名推理的问题,只能使用配置文件推理。
     2. 由于原项目的bug, mdx系列只能配置Ensemble模式, 在MDX模式下配置,保存后的配置文件中的模型名并不是你选择的。VR系列可以在VR模式下配置
     3. 你可以在`ultimatevocalremovergui\gui_data\saved_ensembles`和`ultimatevocalremovergui\gui_data\saved_settings`中查看已经配置好的。
-    4. 你也可以按需自行运行UVR.py并在UI界面选择并配置, config即为配置文件名, 不带后缀'''
+    4. 你也可以按需自行运行UVR-CLI.py并在UI界面选择并配置, config即为配置文件名, 不带后缀'''
 
     default_task_dict = {'en':'mdx23c','vr1':'6-HP','vr2': 'De-Echo-Normal'} # 在这里配置模型任务,相同的模式要加上数字区分
+    default_task_dict = {'en':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这是走UVR5的默认配置
+    default_task_dict = {'ms':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这里ms会走Music-Source-Separation-Training
     parser = argparse.ArgumentParser(description='UVR5')
     parser.add_argument('-i', '--input_audio', type=str, help='input file path')    # 音频文件的绝对路径
     parser.add_argument('-o', '--output_folder', type=str, help='output folder')    # 输出文件夹的绝对路径

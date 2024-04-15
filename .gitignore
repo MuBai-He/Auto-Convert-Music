@@ -154,3 +154,5 @@ logs/
 ultimatevocalremovergui/
 
 test.py
+assets/code/UVR-CLI-bs_roformer.py
+Music-Source-Separation-Training/

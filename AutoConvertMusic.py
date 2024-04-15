@@ -66,7 +66,9 @@ class convert_music():
         else:
             if len(self.converting)==0:
                 self.converting.append(song_name)
-                thread = threading.Thread(target=self.convert_music, kwargs={'name':song_name,'music_file_path': music_file_path, 'speaker': speaker})
+                thread = threading.Thread(target=self.convert_music, 
+                                          kwargs={'name':song_name,'music_file_path': music_file_path,
+                                                   'speaker': speaker})
                 thread.start()
                 return "processing",song_name
             else:
@@ -83,7 +85,8 @@ class convert_music():
             my_logging.info(f'1.开始转换歌曲:{name}')
             if not os.path.exists(f"output/{name}/Vocals.wav"):
                 self.sep_song(song_name=name,file_path=music_file_path)
-            my_logging.info(f'2.调用UVR分离声音：人声mdx23c->和声6-HP->混响De-Echo-Normal 完成:{name}')
+            task = list(self.default_task_dict.values())
+            my_logging.info(f'2.调用UVR分离声音：人声{task[0]}->和声{task[1]}->混响{task[2]} 完成:{name}')
             if not os.path.exists(f"output/{name}/Vocals_{speaker}.wav"):
                 self.convert_vocals(song_name=name,speaker=speaker)
             my_logging.info(f'3.调用sovits4.1变声完成:{name}')
@@ -171,6 +174,7 @@ if __name__ == "__main__":
         "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
     }
     choose_music_platform = ["netease", "bilibili", "youtube"]
-    default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
-    music_moudle=convert_music(music_platform="netease", svc_config=svc_config, default_task_dict=default_task_dict)
-    music_moudle.add_conversion_task(music_info="千里邀月 乐正绫 泠鸢yousa 茶理理 Hanser 三无", speaker="神里绫华[中]")
+    default_task_dict = {'en':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这是走UVR5的默认配置
+    default_task_dict = {'ms':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这里ms会走Music-Source-Separation-Training
+    music_moudle=convert_music(music_platform="youtube", svc_config=svc_config, default_task_dict=default_task_dict)
+    music_moudle.add_conversion_task(music_info="ピカピカなのん 小岩井ことり", speaker="神里绫华[中]")
