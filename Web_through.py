@@ -12,10 +12,11 @@ svc_config = {
     "diffusion_config_path": r"sovits4.1\logs\44k\diffusion\config.yaml"
 }
 
-choose_music_platform = ["netease", "bilibili"]
-default_task_dict = {'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}
+choose_music_platform = ["netease", "bilibili", "youtube"]
+default_task_dict = {'en':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这是走UVR5的默认配置
+default_task_dict = {'ms':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这里ms会走Music-Source-Separation-Training
 
-music_moudle=convert_music(music_platform="bilibili", svc_config=svc_config, default_task_dict=default_task_dict)
+music_moudle=convert_music(music_platform=choose_music_platform[1], svc_config=svc_config, default_task_dict=default_task_dict)
 
 app = Flask(__name__)
 speaker = "刻晴[中]"

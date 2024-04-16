@@ -53,18 +53,11 @@ def DownloadGithubProject1(repo_id: str, branch: str, local_dir: str, check_file
         Repo.clone_from(f"https://github.com/{owner}/{repository}.git", repo_dir, branch=branch)
 
 
-def check_uvr1():
+def check_uvr(check_name, check_file):
     folders = [i for i in os.listdir() if os.path.isdir(i)]
     for folder in folders:
-        if re.search(r"ultimatevocalremovergui", folder):
-            return folder, check_file_exists(folder, ["UVR.py", "separate.py"])
-    return None, None
-
-def check_uvr2():
-    folders = [i for i in os.listdir() if os.path.isdir(i)]
-    for folder in folders:
-        if re.search(r"Music-Source-Separation-Training", folder):
-            return folder, check_file_exists(folder, ["train.py", "inference.py", "README.md"])
+        if re.search(check_name, folder):
+            return folder, check_file_exists(folder, check_file)
     return None, None
 
 
@@ -95,7 +88,7 @@ def download_model(url, local_dir, model_name):
             wget.download(url, out=local_dir, bar=bar_progress)
 
 def main1():
-    if not check_uvr1()[1]:
+    if not check_uvr("ultimatevocalremovergui", ["UVR.py", "separate.py"])[1]:
         DownloadGithubProject("Anjok07/ultimatevocalremovergui",
                     "v5.6.0_roformer_add", os.getcwd(), ["UVR.py", "separate.py"])
 
@@ -103,23 +96,25 @@ def main1():
     #                     "v5.6.0_roformer_add", os.getcwd(), ["UVR.py", "separate.py"])
     # DownloadGithubProject("Anjok07/ultimatevocalremovergui",
     #                     "master", os.getcwd(), ["UVR.py", "separate.py"])
-    uvr_folder, uvr_exist = check_uvr1()
-    if uvr_exist:
-        if not os.path.exists(f"{uvr_folder}/UVR-CLI.py"):
-            shutil.copy("assets/code/UVR-CLI.py", uvr_folder)
-        if not os.path.exists(f"{uvr_folder}/separate.py"):
-            shutil.copy("assets/code/separate.py", uvr_folder)
-        copy_folder("assets/uvr5_config", f"{uvr_folder}/gui_data")
+    uvr_folder1, uvr_exist1 = check_uvr("ultimatevocalremovergui", ["UVR.py", "separate.py"])
+    if uvr_exist1:
+        if not os.path.exists(f"{uvr_folder1}/UVR-CLI.py"):
+            shutil.copy("assets/code/UVR-CLI.py", uvr_folder1)
+        shutil.copy("assets/code/separate.py", uvr_folder1)
+        copy_folder("assets/uvr5_config", f"{uvr_folder1}/gui_data")
 
 def main2():
-    if not check_uvr2()[1]:
+    if not check_uvr("Music-Source-Separation-Training", ["train.py", "inference.py", "README.md"])[1]:
         DownloadGithubProject("ZFTurbo/Music-Source-Separation-Training",
                         "main", os.getcwd(), ["train.py", "inference.py", "README.md"])
-    copy_folder("assets/config", "Music-Source-Separation-Training/configs/viperx")
-    download_model("https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/model_bs_roformer_ep_368_sdr_12.9628.ckpt",
+    uvr_folder2, uvr_exist2 = check_uvr("Music-Source-Separation-Training", ["train.py", "inference.py", "README.md"])
+    if uvr_exist2:
+        if not os.path.exists(f"{uvr_folder2}/inference-opt.py"):
+            shutil.copy("assets/code/inference-opt.py", uvr_folder2)
+        copy_folder("assets/config", f"{uvr_folder2}/configs/viperx")
+
+        download_model("https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/model_bs_roformer_ep_368_sdr_12.9628.ckpt",
                     "Music-Source-Separation-Training/results", "model_bs_roformer_ep_368_sdr_12.9628.ckpt")
-    if not os.path.exists("Music-Source-Separation-Training/inference-opt.py"):
-        shutil.copy("assets/code/inference-opt.py", "Music-Source-Separation-Training")
 
 if __name__ == "__main__":
     main1()

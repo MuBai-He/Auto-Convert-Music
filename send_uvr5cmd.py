@@ -244,7 +244,7 @@ class Separation_Song:
 
     def multi_model_order_separation(self,):
         for idx, task in enumerate(self.task_dict):
-            loguru.logger.info(f"开始第{idx}个模型分离,模型任务为：{self.task_dict[task]}")
+            loguru.logger.info(f"开始第{idx+1}个模型分离,模型任务为：{self.task_dict[task]}")
             if task.lower()[:2] != 'ms':
                 single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             else:
