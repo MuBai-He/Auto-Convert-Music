@@ -252,13 +252,13 @@ class Separation_Song:
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.success(f"第{idx+1}个模型分离完成")
 
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.output_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
-        shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.output_folder, "Instrumental.wav"))    # 第一个MDX分离的伴奏文件
-        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.output_folder, "Chord.wav"))    # 和声
-        shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.output_folder, "Echo.wav"))       # 混响
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-v.wav"), os.path.join(self.temp_folder, "Vocals.wav"))  # 经过多个模型分离的人声文件
+        shutil.copy(os.path.join(self.temp_folder, "0-i.wav"), os.path.join(self.temp_folder, "Instrumental.wav"))    # 第一个模型分离的伴奏文件
+        shutil.copy(os.path.join(self.temp_folder, f"{idx-1}-i.wav"), os.path.join(self.temp_folder, "Chord.wav"))    # 和声
+        shutil.copy(os.path.join(self.temp_folder, f"{idx}-i.wav"), os.path.join(self.temp_folder, "Echo.wav"))       # 混响
 
         time.sleep(1)
-        shutil.rmtree(self.temp_folder)
+        # shutil.rmtree(self.temp_folder)
         # 关闭UVR窗口
         win32gui.EnumWindows(self.close_window, None)
         # 杀UVR web进程

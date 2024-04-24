@@ -26,7 +26,8 @@ class convert_music():
 
     def __init__(self, music_platform : str,
                   svc_config : dict, 
-                  default_task_dict={'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'}):
+                  default_task_dict={'en': 'mdx23c', 'vr1': '6-HP', 'vr2': 'De-Echo-Normal'},
+                  compress=False):
         self.default_task_dict = default_task_dict
         self.converting=[]
         self.converted=[]
@@ -34,6 +35,7 @@ class convert_music():
         self.waiting_queue = queue.Queue()
         self.music_platform = music_platform
         self.svc_config = svc_config
+        self.compress = compress
         if self.music_platform == "netease":
             self.platform = netease.Netease_music()
         elif self.music_platform == "bilibili":
@@ -87,6 +89,15 @@ class convert_music():
                 self.sep_song(song_name=name,file_path=music_file_path)
             task = list(self.default_task_dict.values())
             my_logging.info(f'2.调用UVR分离声音：人声{task[0]}->和声{task[1]}->混响{task[2]} 完成:{name}')
+
+            if self.compress:
+                self.compressed_audio(name)
+            else:
+                file_names = ["Vocals.wav", "Instrumental.wav", "Chord.wav", "Echo.wav"]
+                for file_name in file_names:
+                    shutil.move(f"output/{name}/temp/{file_name}", f"output/{name}")
+                shutil.rmtree(f"output/{name}/temp")
+
             if not os.path.exists(f"output/{name}/Vocals_{speaker}.wav"):
                 self.convert_vocals(song_name=name,speaker=speaker)
             my_logging.info(f'3.调用sovits4.1变声完成:{name}')
@@ -113,6 +124,18 @@ class convert_music():
         if win32gui.IsWindowVisible(hwnd):
             if 'Ultimate Vocal Remover' in win32gui.GetWindowText(hwnd):
                 win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+
+    def compressed_audio(self, name):
+        Vocals = f"output/{name}/temp/Vocals.wav"
+        shutil.move(Vocals, f"output/{name}")
+        Instrumental = f"output/{name}/temp/Instrumental.wav"
+        Chord = f"output/{name}/temp/Chord.wav"
+        Echo = f"output/{name}/temp/Echo.wav"
+        for file in [Instrumental, Chord, Echo]:
+            output_file = file.replace("temp/", "")
+            cmd = f"ffmpeg -i {file} -ar 44100 -acodec pcm_s16le -ac 1 -y {output_file}"
+            subprocess.run(cmd ,shell=True)
+        shutil.rmtree(f"output/{name}/temp")
 
     def mix_music(self,song_name,speaker):
         Vocal = AudioSegment.from_wav(rf'output/{song_name}/Vocals_processed.wav')
@@ -176,5 +199,5 @@ if __name__ == "__main__":
     choose_music_platform = ["netease", "bilibili", "youtube"]
     default_task_dict = {'en':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这是走UVR5的默认配置
     default_task_dict = {'ms':'bs-roformer-1296','vr1':'6-HP','vr2': 'De-Echo-Normal'}  # 这里ms会走Music-Source-Separation-Training
-    music_moudle=convert_music(music_platform="youtube", svc_config=svc_config, default_task_dict=default_task_dict)
-    music_moudle.add_conversion_task(music_info="ピカピカなのん 小岩井ことり", speaker="神里绫华[中]")
+    music_moudle=convert_music(music_platform=choose_music_platform[1], svc_config=svc_config, default_task_dict=default_task_dict, compress=True)
+    music_moudle.add_conversion_task(music_info="ピカピカなのん", speaker="神里绫华[中]")
