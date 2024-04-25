@@ -364,5 +364,21 @@
     },
     "116f6f9dabb907b53d847ed9f7a9475f": {
         "config_yaml": "model_2_stem_full_band_8k.yaml"
+    },
+    "53f707017bfcbb56f5e1bfac420d6732": {
+        "config_yaml": "model_bs_roformer_ep_317_sdr_12.9755.yaml",
+        "is_roformer": true
+    },
+    "63e41acc264bf681a73aa9f7e5f606cc": {
+        "config_yaml": "model_mel_band_roformer_ep_3005_sdr_11.4360.yaml",
+        "is_roformer": true
+    },
+    "e733736763234047587931fc35322fd9": {
+        "config_yaml": "model_bs_roformer_ep_937_sdr_10.5309.yaml",
+        "is_roformer": true
+    },
+    "d789065adfd747d6f585b27b495bcdae": {
+        "config_yaml": "model_bs_roformer_ep_368_sdr_12.9628.yaml",
+        "is_roformer": true
     }
 }

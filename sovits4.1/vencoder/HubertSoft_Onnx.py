@@ -5,7 +5,7 @@ from vencoder.encoder import SpeechEncoder
 
 
 class HubertSoft_Onnx(SpeechEncoder):
-    def __init__(self, vec_path="pretrain/hubert-soft.onnx", device=None):
+    def __init__(self, vec_path="sovits4.1/pretrain/hubert-soft.onnx", device=None):
         super().__init__()
         print("load model(s) from {}".format(vec_path))
         self.hidden_dim = 256

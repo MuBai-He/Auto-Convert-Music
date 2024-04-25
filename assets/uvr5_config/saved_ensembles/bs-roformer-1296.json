@@ -1,0 +1,7 @@
+{
+    "ensemble_main_stem": "Vocals/Instrumental",
+    "ensemble_type": "Max Spec/Min Spec",
+    "selected_models": [
+        "MDX-Net: BS-Roformer-Viperx-1296"
+    ]
+}

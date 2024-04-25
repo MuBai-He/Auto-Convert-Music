@@ -5,7 +5,7 @@ from vencoder.wavlm.WavLM import WavLM, WavLMConfig
 
 
 class WavLMBasePlus(SpeechEncoder):
-    def __init__(self, vec_path="pretrain/WavLM-Base+.pt", device=None):
+    def __init__(self, vec_path="sovits4.1/pretrain/WavLM-Base+.pt", device=None):
         super().__init__()
         print("load model(s) from {}".format(vec_path))
         checkpoint = torch.load(vec_path)
