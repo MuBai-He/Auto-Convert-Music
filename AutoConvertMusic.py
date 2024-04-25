@@ -54,7 +54,7 @@ class convert_music():
             return "processed",song_name
         # 下载歌曲
         my_logging.info(f'开始下载歌曲:{music_name}')
-        D_name,file_path = self.net_music.download_music(id=id,download_folder="output",vocal="刻晴[中]")
+        D_name,file_path = self.net_music.download_path_music(id=id,download_folder="output",vocal="刻晴[中]")
         my_logging.info(f'1.下载歌曲完成:{music_name}')
         # 歌曲完成标志
         self.converted.append(music_name)
@@ -75,7 +75,7 @@ class convert_music():
     def music_info(self,song_name):
         id,name=self.net_music.search_music(song_name)
         #歌曲名称过滤
-        name = re.sub(r'[\[\]<>:"/\\|?*]', '', name).rstrip('. ')
+        name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')
         return id,name
 
     def convert_music(self,name, id, vocal):
