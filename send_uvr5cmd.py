@@ -248,7 +248,7 @@ class Separation_Song:
             if task.lower()[:2] != 'ms':
                 single_model_separation(self.input_file_path, self.temp_folder, task.lower()[:2], self.task_dict[task], None)
             else:
-                msst_separation(self.input_file_path, self.temp_folder)
+                msst_separation("\""+self.input_file_path+"\"", "\""+self.temp_folder+"\"")
             self.check_file_exist(self.temp_folder, idx)
             loguru.logger.success(f"第{idx+1}个模型分离完成")
 

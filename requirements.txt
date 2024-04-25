@@ -41,7 +41,7 @@ wget==3.2
 screeninfo==0.8.1
 flask
 samplerate==0.1.0
-yutto
+yutto==2.0.0b35
 selenium
 yt_dlp
 rich

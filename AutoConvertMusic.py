@@ -63,7 +63,7 @@ class convert_music():
         # 搜索网络歌曲是否存在
         id,song_name=self.search.search_music(music_info)
         # 判断歌曲是否存在
-        if os.path.exists(f"output/{song_name}/{song_name}_{speaker}.wav")==True:
+        if os.path.exists(f"output/{song_name}/Vocals_processed.wav")==True and os.path.exists(f"output/{song_name}/accompany.wav")==True:
             self.converted.append(song_name)
             return "processed",song_name
         else:
@@ -81,7 +81,7 @@ class convert_music():
                 self.waiting_queue.put((music_info, speaker))
                 return "waiting",song_name
 
-    def download_task(self, music_name, speaker):
+    def download_task(self, music_name):
         #获取网易歌库歌曲名称
         id,song_name=self.platform.search_music(music_name)
         #判断歌曲是否生成
@@ -90,7 +90,7 @@ class convert_music():
             return "processed",song_name
         # 下载歌曲
         my_logging.info(f'开始下载歌曲:{music_name}')
-        D_name,file_path = self.platform.download_path_music(id=id,download_folder="output",vocal=speaker)
+        D_name,file_path = self.platform.download_path_music(id=id,download_folder="output")
         my_logging.info(f'1.下载歌曲完成:{music_name}')
         # 歌曲完成标志
         self.converted.append(music_name)
@@ -107,13 +107,16 @@ class convert_music():
     def download_music(self,id):
         name,file_path = self.platform.download_music(id)
         return name,file_path
+    
+    def music_info(self,song_name):
+        id,name=self.search.search_music(song_name)
+        return id,name
 
     def convert_music(self,name, music_file_path, speaker):
         try:
             my_logging.info(f'开始转换歌曲:{name}')
             # 1.调用UVR分离声音:人声、和声、混响
-            if not os.path.exists(f"output/{name}/Vocals.wav"):
-                self.sep_song(song_name=name,file_path=music_file_path)
+            self.sep_song(song_name=name,file_path=music_file_path)
             task = list(self.default_task_dict.values())
             my_logging.info(f'1.调用UVR分离声音：人声{task[0]}->和声{task[1]}->混响{task[2]} 完成:{name}')
             # 压缩音频
@@ -131,9 +134,11 @@ class convert_music():
             # 3.音效处理完成
             self.vocal_processing(song_name=name,speaker=speaker)
             my_logging.info(f'3.音效处理完成:{name}')
-            # 4.组合背景乐、和声
-            self.mix_music(name,speaker)
-            my_logging.info(f'4.组合背景乐、和声完成:{name}')
+            # 4.合成背景乐、和声
+            # self.mix_music(name,speaker)
+            # 4.合成伴奏
+            self.mix_music_accompany(name)
+            my_logging.info(f'4.合成伴奏完成:{name}')
             self.converting.remove(name)
             self.check_waiting_queue()
             self.converted.append(name)
@@ -162,10 +167,12 @@ class convert_music():
         Echo = f"output/{name}/temp/Echo.wav"
         for file in [Instrumental, Chord, Echo]:
             output_file = file.replace("temp/", "")
-            cmd = f"ffmpeg -i {file} -ar 44100 -acodec pcm_s16le -ac 1 -y {output_file}"
+            cmd = f"ffmpeg -i \"{file}\" -ar 44100 -acodec pcm_s16le -ac 1 -y \"{output_file}\""
+            print(cmd)
             subprocess.run(cmd ,shell=True)
         shutil.rmtree(f"output/{name}/temp")
 
+    # 合成人声+伴奏【完整乐曲】
     def mix_music(self,song_name,speaker):
         Vocal = AudioSegment.from_wav(rf'output/{song_name}/Vocals_processed.wav')
         Background_music = AudioSegment.from_wav(rf'output/{song_name}/Instrumental.wav')
@@ -174,6 +181,14 @@ class convert_music():
 
         output = Background_music.overlay(Vocal).overlay(Chord)#.overlay(Echo)
         output.export(f"output/{song_name}/{song_name}_{speaker}.wav", format="wav")
+    
+    # 合成伴奏
+    def mix_music_accompany(self,song_name):
+        Background_music = AudioSegment.from_wav(rf'output/{song_name}/Instrumental.wav')
+        Chord = AudioSegment.from_wav(rf'output/{song_name}/Chord.wav')
+
+        output = Background_music.overlay(Chord)#.overlay(Echo)
+        output.export(f"output/{song_name}/accompany.wav", format="wav")
 
     def vocal_processing(self,song_name,speaker):
         board = Pedalboard([
@@ -201,11 +216,11 @@ class convert_music():
         cluster_infer_ratio = self.svc_config["cluster_infer_ratio"]
         diffusion_model_path = self.svc_config["diffusion_model_path"]
         diffusion_config_path = self.svc_config["diffusion_config_path"]
-        cmd = sys.executable + f" sovits4.1/inference_main.py -m {model_path} \
-            -c {config_path} -n {clean_names} -s {speaker} \
-            -cm {cluster_model_path} -cr {cluster_infer_ratio} \
-            -dm {diffusion_model_path} -dc {diffusion_config_path}"
-        
+        cmd = sys.executable + f" sovits4.1/inference_main.py -m \"{model_path}\" \
+            -c \"{config_path}\" -n \"{clean_names}\" -s {speaker} \
+            -cm \"{cluster_model_path}\" -cr {cluster_infer_ratio} \
+            -dm \"{diffusion_model_path}\" -dc \"{diffusion_config_path}\""
+        print(cmd)
         subprocess.run(cmd, shell=True)
 
     def sep_song(self, song_name ,file_path):

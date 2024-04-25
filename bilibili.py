@@ -131,8 +131,8 @@ class Bilibili:
 
         audio_format = "mkv"
         logger.success(f"开始下载音乐: {music_url}")
-        cmd = sys.executable + f' -m yutto {music_url} --audio-only -c {sessdata} -d "input" --no-danmaku'
-
+        cmd = sys.executable + f' -m yutto {music_url} --audio-only --output-format-audio-only {audio_format} -c {sessdata} -d "input" --no-danmaku'
+        print(cmd)
         out = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding="utf-8").stdout
 
         match = re.search("文件\s*(.*?)\s*已存在", out)
