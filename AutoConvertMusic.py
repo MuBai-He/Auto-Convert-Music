@@ -68,7 +68,7 @@ class convert_music():
             return "processed",song_name
         else:
             # 不存在下载歌曲
-            song_name, music_file_path=self.platform.download_music(song_name)
+            song_name, music_file_path=self.platform.download_music(music_info)
 
             if len(self.converting)==0:
                 self.converting.append(song_name)
