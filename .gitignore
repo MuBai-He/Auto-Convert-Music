@@ -151,7 +151,6 @@ NeteaseCloudMusicApi/
 logs/
 .idea/
 
-ultimatevocalremovergui/
 
 test.py
 assets/code/UVR-CLI-bs_roformer.py
