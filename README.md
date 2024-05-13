@@ -82,7 +82,7 @@ python ultimatevocalremovergui/UVR-CLI.py
 
 ### 四、已部署项目
 
-[Ai吟美-泠鸢唱歌-哔哩哔哩直播] https://b23.tv/Yad4lKz
+[Ai吟美-泠鸢唱歌-哔哩哔哩直播](https://b23.tv/Yad4lKz)
 
 ### 五、鸣谢
 
