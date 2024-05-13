@@ -80,7 +80,11 @@ python ultimatevocalremovergui/UVR-CLI.py
     2、Q:如何自定义使用？A:你可以自行参考`AutoConvertMusic.py`、`send_uvr5cmd.py`、`bilibili.py` `youtube.py`中的`if __name__ == "__main__":`部分。
     3、api可参考Web_through.py，你可以通过这个api接入各种聊天机器人，比如qq机器人、微信机器人等。同时，也可以接入AI虚拟主播、数字人等。
 
-### 四、鸣谢
+### 四、已部署项目
+
+[Ai吟美-泠鸢唱歌-哔哩哔哩直播] https://b23.tv/Yad4lKz
+
+### 五、鸣谢
 
 歌声转换的项目是[so-vits-svc-4.1](https://github.com/svc-develop-team/so-vits-svc)，请给so-vits-svc-4.1一个star，谢谢喵😊ヾ(≧▽≦*)o 
 
