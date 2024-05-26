@@ -28,6 +28,7 @@ music_moudle=convert_music(music_platform=choose_music_platform[0], svc_config=s
 
 app = Flask(__name__)
 speaker = "yousa"
+save_path="G:\song\output"
 
 @app.route('/musicInfo/<song_name>', methods=['GET'])
 def get_music_info(song_name):
@@ -37,10 +38,10 @@ def get_music_info(song_name):
 # 人声和伴奏分离-使用这个接口
 @app.route('/accompany_vocal_status', methods=['GET'])
 def get_accompany_vocal_status():
-    file_list = glob.glob(f"output/*/accompany.wav")
+    file_list = glob.glob(f"{save_path}/*/accompany.wav")
     file_name = []
     for f in file_list:
-        temp = f.replace("\\accompany.wav", "").replace("output\\", "")
+        temp = f.replace("\\accompany.wav", "").replace(f"{save_path}\\", "")
         file_name.append(temp)
 
     # 返回converting和converted的状态
@@ -56,7 +57,7 @@ def get_accompany_vocal_status():
 def get_status():
     #vocal1 = speaker.replace("[中]", "[[]中[]]")
     vocal1 = speaker
-    file_list = glob.glob(f"output/*/*[!Vocals]*_{vocal1}.wav")
+    file_list = glob.glob(f"{save_path}/*/*[!Vocals]*_{vocal1}.wav")
     file_name = []
     for f in file_list:
         filename = os.path.basename(f)
@@ -85,7 +86,7 @@ def download_origin_song(song_name):
 # 下载合成音乐
 @app.route('/get_audio/<song_name>', methods=['GET'])
 def get_audio(song_name):
-    search_pattern = os.path.join(f"output/{song_name}/{song_name}*.wav")
+    search_pattern = os.path.join(f"{save_path}/{song_name}/{song_name}*.wav")
     list = glob.glob(search_pattern)
     if len(list)>0:
         matching_files = list[0]
@@ -98,7 +99,7 @@ def get_audio(song_name):
 @app.route('/get_accompany/<song_name>', methods=['GET'])
 def get_accompany(song_name):
     try:
-        absolute_path = os.path.abspath(f"output/{song_name}/accompany.wav")
+        absolute_path = os.path.abspath(f"{save_path}/{song_name}/accompany.wav")
         return send_file(absolute_path, as_attachment=False)
     except:
         abort(404, description="Accompany file not found")
@@ -107,7 +108,7 @@ def get_accompany(song_name):
 @app.route('/get_vocal/<song_name>', methods=['GET'])
 def get_vocal(song_name):
     try:
-        absolute_path = os.path.abspath(f"output/{song_name}/Vocals_processed.wav")
+        absolute_path = os.path.abspath(f"{save_path}/{song_name}/Vocals_processed.wav")
         return send_file(absolute_path, as_attachment=False)
     except:
         abort(404, description="Vocal file not found")

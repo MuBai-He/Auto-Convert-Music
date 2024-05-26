@@ -4,6 +4,7 @@ import re
 import requests
 import json
 
+input_path="G:\song\input"
 class Netease_music():
     def __init__(self,address="http://localhost:3000"):
         self.netease = requests.session()
@@ -36,19 +37,31 @@ class Netease_music():
         name=info['name']
         name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')
         return id,name
-
+    
+    def search_music_byid(self,id):
+        songInfo=self.netease.get(self.address+f"/song/detail?ids={id}").text
+        jsonData = json.loads(songInfo)
+        #判断歌曲不存在歌库的情况
+        if not jsonData.get("songs"):
+            return 0,""
+        info=jsonData['songs'][0]
+        id=info['id']
+        name=info['name']
+        name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')
+        return id,name
+    
     def download_music(self,music_info,level="exhigh"):
         id, name = self.search_music(song_name=music_info)
-        if not os.path.exists('input'):
-            os.mkdir('input')
+        if not os.path.exists(input_path):
+            os.mkdir(input_path)
         song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
         song_url=json.loads(song_url)['data'][0]['url']
         song=self.netease.get(song_url)
         suffix = song_url.split(".")[-1]
         if suffix!="":
-            file_name='input\\' + name + '.' + suffix
+            file_name=f'{input_path}\\' + name + '.' + suffix
         else:
-            file_name='input\\' + name + '.mp3'
+            file_name=f'{input_path}\\' + name + '.mp3'
         with open( file_name, 'wb') as f:
             f.write(song.content)
         return name,file_name

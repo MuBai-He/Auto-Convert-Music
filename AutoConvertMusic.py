@@ -18,12 +18,13 @@ import importlib
 
 my_logging=LogsBase(__name__)
 
-save_path="output"
+input_path="G:\song\input"
+save_path="G:\song\output"
 class convert_music():
 
     os.makedirs("logs", exist_ok=True)
-    os.makedirs("input", exist_ok=True)
-    os.makedirs("output", exist_ok=True)
+    os.makedirs(input_path, exist_ok=True)
+    os.makedirs(save_path, exist_ok=True)
 
     def __init__(self, music_platform : str,
                   svc_config : dict, 
@@ -91,7 +92,7 @@ class convert_music():
             return "processed",song_name
         # 下载歌曲
         my_logging.info(f'开始下载歌曲:{music_name}')
-        D_name,file_path = self.platform.download_path_music(id=id,download_folder="output")
+        D_name,file_path = self.platform.download_path_music(id=id,download_folder=save_path)
         my_logging.info(f'1.下载歌曲完成:{music_name}')
         # 歌曲完成标志
         self.converted.append(music_name)
@@ -99,7 +100,25 @@ class convert_music():
            self.convertfail.remove(music_name)
         my_logging.info(f'歌曲完成转换:{music_name}')
         return "processed",song_name
-
+    
+    def download_task_byid(self, id):
+        #获取网易歌库歌曲名称
+        id,song_name=self.platform.search_music_byid(id)
+        #判断歌曲是否生成
+        if os.path.exists(f"{save_path}/{song_name}/{song_name}.wav")==True:
+            self.converted.append(song_name)
+            return "processed",song_name
+        # 下载歌曲
+        my_logging.info(f'开始下载歌曲:{song_name}')
+        D_name,file_path = self.platform.download_path_music(id=id,download_folder=save_path)
+        my_logging.info(f'1.下载歌曲完成:{song_name}')
+        # 歌曲完成标志
+        self.converted.append(song_name)
+        if song_name in self.convertfail:
+           self.convertfail.remove(song_name)
+        my_logging.info(f'歌曲完成转换:{song_name}')
+        return "processed",song_name
+    
     def check_waiting_queue(self):
         if not self.waiting_queue.empty():
             music_info, speaker = self.waiting_queue.get()
@@ -127,20 +146,24 @@ class convert_music():
     def convert_music(self,name, music_file_path, speaker):
         try:
             my_logging.info(f'开始转换歌曲:{name}')
+            file_names = ["Vocals.wav", "Instrumental.wav", "Chord.wav", "Echo.wav"]
             # 1.调用UVR分离声音:人声、和声、混响
-            if self.sep_song_exists(name)==False:
+            if all([os.path.exists(f"{save_path}/{name}/{file_name}") for file_name in file_names])==False:
                self.sep_song(song_name=name,file_path=music_file_path)
             task = list(self.default_task_dict.values())
-            my_logging.info(f'1.调用UVR分离声音：人声{task[0]}->和声{task[1]}->混响{task[2]} 完成:{name}')
+            my_logging.info(f'1-1.调用UVR分离声音：人声{task[0]}->和声{task[1]}->混响{task[2]} 完成:{name}')
             # 压缩音频
             if self.compress:
-                self.compressed_audio(name)
+                # 压缩：压缩到指定路径
+                if all([os.path.exists(f"{save_path}/{name}/{file_name}") for file_name in file_names])==False:
+                   self.compressed_audio(name)
             else:
-                file_names = ["Vocals.wav", "Instrumental.wav", "Chord.wav", "Echo.wav"]
+                # 不压缩：移动歌曲
                 if all([os.path.exists(f"{save_path}/{name}/temp/{file_name}") for file_name in file_names]):
                     for file_name in file_names:
                         shutil.move(f"{save_path}/{name}/temp/{file_name}", f"{save_path}/{name}")
                     shutil.rmtree(f"{save_path}/{name}/temp")
+            my_logging.info(f'1-2.压缩音频：人声->和声->混响 完成:{name}')
             # 2.调用sovits4.1变声完成
             if not os.path.exists(f"{save_path}/{name}/Vocals_{speaker}.wav"):
                 self.convert_vocals(song_name=name,speaker=speaker)
@@ -155,12 +178,19 @@ class convert_music():
             if not os.path.exists(f"{save_path}/{name}/accompany.wav"):
                self.mix_music_accompany(name)
             my_logging.info(f'4.合成伴奏完成:{name}')
+            # 队列调整
             self.converting.remove(name)
-            self.check_waiting_queue()
-            self.converted.append(name)
+            # 转换失败，移除文件夹
+            delete_filenames = ["Vocals.wav", "Instrumental.wav", "Chord.wav", "Echo.wav" , f"Vocals_{speaker}.wav"]
             if name in self.convertfail:
                 self.convertfail.remove(name)
+            else:
+                self.converted.append(name)
+                all([os.remove(f"{save_path}/{name}/{file_name}") for file_name in delete_filenames])
+
             my_logging.info(f'歌曲完成转换:{name}')
+            #检查等待队列，调到下一首歌曲转换
+            self.check_waiting_queue()
         except Exception as e:
             win32gui.EnumWindows(self.close_window, None)
             traceback.print_exc()
@@ -229,7 +259,7 @@ class convert_music():
     def convert_vocals(self,song_name, speaker):
         model_path = self.svc_config["model_path"]
         config_path = self.svc_config["config_path"]
-        clean_names = f'./{save_path}/{song_name}/Vocals.wav'
+        clean_names = f'{save_path}/{song_name}/Vocals.wav'
         cluster_model_path = self.svc_config["cluster_model_path"]
         cluster_infer_ratio = self.svc_config["cluster_infer_ratio"]
         diffusion_model_path = self.svc_config["diffusion_model_path"]
@@ -242,10 +272,9 @@ class convert_music():
         subprocess.run(cmd, shell=True)
 
     def sep_song(self, song_name ,file_path):
-        file_ex_path = os.getcwd()+"\\"+file_path
-        output_path=os.getcwd()+ rf"\output\{song_name}"
-        Path("./output", song_name).mkdir(parents=True, exist_ok=True)
-        separation_song = Separation_Song(file_ex_path ,output_path , self.default_task_dict)
+        output_path=f"{save_path}\{song_name}"
+        Path(save_path, song_name).mkdir(parents=True, exist_ok=True)
+        separation_song = Separation_Song(file_path ,output_path , self.default_task_dict)
         separation_song.multi_model_order_separation()
 
 
