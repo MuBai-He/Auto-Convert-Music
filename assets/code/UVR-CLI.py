@@ -195,7 +195,7 @@ def load_data() -> dict:
             data = pickle.load(data_file)
 
         return data
-    except (ValueError, FileNotFoundError):
+    except (ValueError, FileNotFoundError, BaseException):
         # Data File is corrupted or not found so recreate it
 
         save_data(data=DEFAULT_DATA)
