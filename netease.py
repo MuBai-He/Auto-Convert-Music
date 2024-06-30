@@ -1,119 +1,139 @@
-#coding=UTF-8
+# coding=UTF-8
 import os
 import re
 import requests
 import json
 
-input_path="G:\song\input"
-class Netease_music():
-    def __init__(self,address="http://localhost:3000"):
+input_path = "G:\song\input"
+
+
+class Netease_music:
+    def __init__(self, address="http://localhost:3000"):
         self.netease = requests.session()
-        self.address=address
+        self.address = address
         try:
-            with open('netease.txt', 'r') as f:
+            with open("netease.txt", "r") as f:
                 pass
             self.load_cookie()
         except:
             print("                         请先登陆")
             self.log_in()
-        print("当前账号",json.loads(self.netease.get(address+"/login/status").text)["data"]["profile"]["nickname"])
+        print(
+            "当前账号",
+            json.loads(self.netease.get(address + "/login/status").text)["data"][
+                "profile"
+            ]["nickname"],
+        )
+
     def load_cookie(self):
-        with open('netease.txt') as f:
+        with open("netease.txt") as f:
             self.netease.cookies.update(json.loads(f.read()))
 
     def save_cookie(self):
-        with open('netease.txt','w') as f:
-            cookie=json.dumps(self.netease.cookies.get_dict())
+        with open("netease.txt", "w") as f:
+            cookie = json.dumps(self.netease.cookies.get_dict())
             f.write(cookie)
-    
-    def search_music(self,song_name):
-        info=self.netease.get(self.address+f"/search?keywords={song_name}&limit=1").text
+
+    def search_music(self, song_name):
+        info = self.netease.get(
+            self.address + f"/search?keywords={song_name}&limit=1"
+        ).text
         jsonData = json.loads(info)
-        #判断歌曲不存在歌库的情况
+        # 判断歌曲不存在歌库的情况
         if not jsonData.get("result"):
-            return 0,""
-        info=jsonData['result']['songs'][0]
-        id=info['id']
-        name=info['name']
-        name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')
-        return id,name
-    
-    def search_music_byid(self,id):
-        songInfo=self.netease.get(self.address+f"/song/detail?ids={id}").text
+            return 0, ""
+        info = jsonData["result"]["songs"][0]
+        id = info["id"]
+        name = info["name"]
+        name = re.sub(r'[\[\]<>:"/\\|?*.;#]', "", name).rstrip(". ")
+        return id, name
+
+    def search_music_byid(self, id):
+        songInfo = self.netease.get(self.address + f"/song/detail?ids={id}").text
         jsonData = json.loads(songInfo)
-        #判断歌曲不存在歌库的情况
+        # 判断歌曲不存在歌库的情况
         if not jsonData.get("songs"):
-            return 0,""
-        info=jsonData['songs'][0]
-        id=info['id']
-        name=info['name']
-        name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')
-        return id,name
-    
-    def download_music(self,music_info,level="exhigh"):
+            return 0, ""
+        info = jsonData["songs"][0]
+        id = info["id"]
+        name = info["name"]
+        name = re.sub(r'[\[\]<>:"/\\|?*.;#]', "", name).rstrip(". ")
+        return id, name
+
+    def download_music(self, music_info, level="exhigh"):
         id, name = self.search_music(song_name=music_info)
         if not os.path.exists(input_path):
             os.mkdir(input_path)
-        song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
-        song_url=json.loads(song_url)['data'][0]['url']
-        song=self.netease.get(song_url)
+        song_url = self.netease.get(
+            self.address + f"/song/url/v1?id={id}&level={level}"
+        ).text
+        song_url = json.loads(song_url)["data"][0]["url"]
+        song = self.netease.get(song_url)
         suffix = song_url.split(".")[-1]
-        if suffix!="":
-            file_name=f'{input_path}\\' + name + '.' + suffix
+        if suffix != "":
+            file_name = f"{input_path}\\" + name + "." + suffix
         else:
-            file_name=f'{input_path}\\' + name + '.mp3'
-        with open( file_name, 'wb') as f:
+            file_name = f"{input_path}\\" + name + ".mp3"
+        with open(file_name, "wb") as f:
             f.write(song.content)
-        return name,file_name
-    
-    def download_path_music(self,id,download_folder,level="exhigh"):
-        song_url = self.netease.get(self.address+f"/song/url/v1?id={id}&level={level}").text
-        song_url=json.loads(song_url)['data'][0]['url']
-        song=self.netease.get(song_url)
-        name=self.netease.get(self.address+f"/song/detail?ids={id}").text
-        name=json.loads(name)['songs'][0]['name']
-        name = re.sub(r'[\[\]<>:"/\\|?*.;]', '', name).rstrip('. ')  #特殊字符处理
+        return name, file_name
+
+    def download_path_music(self, id, download_folder, level="exhigh"):
+        song_url = self.netease.get(
+            self.address + f"/song/url/v1?id={id}&level={level}"
+        ).text
+        song_url = json.loads(song_url)["data"][0]["url"]
+        song = self.netease.get(song_url)
+        name = self.netease.get(self.address + f"/song/detail?ids={id}").text
+        name = json.loads(name)["songs"][0]["name"]
+        name = re.sub(r'[\[\]<>:"/\\|?*.;#]', "", name).rstrip(". ")  # 特殊字符处理
         suffix = song_url.split(".")[-1]
-        file_name=f'{download_folder}\\{name}\\{name}.wav'
-        if not os.path.exists(f'{download_folder}\\{name}\\'):
-            os.mkdir(f'{download_folder}\\{name}\\')
-        with open(file_name, 'wb') as f:
+        file_name = f"{download_folder}\\{name}\\{name}.wav"
+        if not os.path.exists(f"{download_folder}\\{name}\\"):
+            os.mkdir(f"{download_folder}\\{name}\\")
+        with open(file_name, "wb") as f:
             f.write(song.content)
-        return name,file_name
-    
+        return name, file_name
+
     def log_in(self):
-        print("######################################################\n"
-              "                       请选择登陆方式\n"
-              "1.邮箱登录 2.手机号登陆 3.手机验证码登陆 4.扫码登陆 5.游客登陆")
+        print(
+            "######################################################\n"
+            "                       请选择登陆方式\n"
+            "1.邮箱登录 2.手机号登陆 3.手机验证码登陆 4.扫码登陆 5.游客登陆"
+        )
         while True:
-            select=0
+            select = 0
             try:
-                select=int(input("\n请输入数字序号："))
+                select = int(input("\n请输入数字序号："))
             except:
                 pass
 
-            if select==1:
-                email=input("请输入邮箱：")
-                password=input("请输入密码：")
+            if select == 1:
+                email = input("请输入邮箱：")
+                password = input("请输入密码：")
                 self.netease.post(f"/login?email={email}&password={password}")
                 self.save_cookie()
-            elif select==2:
-                phone=input("请输入手机号：")
-                password=input("请输入密码：")
-                self.netease.post(self.address+f"/login/cellphone?phone={phone}&password={password}")
+            elif select == 2:
+                phone = input("请输入手机号：")
+                password = input("请输入密码：")
+                self.netease.post(
+                    self.address + f"/login/cellphone?phone={phone}&password={password}"
+                )
                 self.save_cookie()
                 break
-            elif select==3:
-                phone=input("请输入手机号：")
-                self.netease.post(self.address+f"/captcha/sent?phone={phone}")
-                password=input("请输入验证码：")
-                self.netease.post(self.address+f"/captcha/verify?phone={phone}&captcha={password}")
+            elif select == 3:
+                phone = input("请输入手机号：")
+                self.netease.post(self.address + f"/captcha/sent?phone={phone}")
+                password = input("请输入验证码：")
+                self.netease.post(
+                    self.address + f"/captcha/verify?phone={phone}&captcha={password}"
+                )
                 self.save_cookie()
                 break
-            elif select==4:
+            elif select == 4:
                 print("懒得写了")
-            elif select==5:
-                self.netease.post(self.address+f"/register/anonimous")
+            elif select == 5:
+                self.netease.post(self.address + f"/register/anonimous")
                 self.save_cookie()
                 break
             else:

@@ -150,9 +150,10 @@ netease.txt
 NeteaseCloudMusicApi/
 logs/
 .idea/
+.vscode/
 
 ultimatevocalremovergui/
 
-test.py
+test*.py
 assets/code/UVR-CLI-bs_roformer.py
 Music-Source-Separation-Training/
